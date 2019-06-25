@@ -1,4 +1,4 @@
-package amata1219.tosochu.player;
+package amata1219.tosochu.deprecated;
 
 import java.util.UUID;
 
@@ -6,13 +6,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class GamePlayer {
+public class OldGamePlayer {
 
 	//プレイヤーのUUID
 	public final UUID uuid;
 
 	//権限
-	public final Permission permission = Permission.ADMINISTRATOR;
+	public final OldPerm permission = OldPerm.ADMINISTRATOR;
 
 	//逃走成功回数
 	private int runawaySuccessCount;
@@ -26,7 +26,7 @@ public class GamePlayer {
 	//現在の賞金
 	private int prizeMoney;
 
-	public GamePlayer(UUID uuid){
+	public OldGamePlayer(UUID uuid){
 		this.uuid = uuid;
 	}
 

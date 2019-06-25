@@ -41,9 +41,6 @@ public class Tosochu extends JavaPlugin {
 		for(Player player : getServer().getOnlinePlayers())
 			PlayerManager.getManager().registerPlayer(player);
 
-		registerListeners(new EventListener());
-
-
 	}
 
 	@Override
@@ -53,13 +50,10 @@ public class Tosochu extends JavaPlugin {
 
 	@Override
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command input, String label, String[] args){
-		if(!(sender instanceof Player)){
-			sender.sendMessage(ChatColor.RED + "ゲーム内から実行して下さい。");
-			return true;
-		}
-		sender.sendMessage(ChatColor.GRAY + "(Debug: v.1.0)");
+		if(!(sender instanceof Player)) return true;
+
 		Command command = commands.get(input.getName());
-		GamePlayer player = PlayerManager.getManager().toGamePlayer(((Player) sender).getUniqueId());
+		GamePlayer player = ;
 		if(command.hasPermission(player))
 			command.onCommand(player, new Args(args));
 		return true;

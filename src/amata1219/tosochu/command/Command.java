@@ -1,13 +1,13 @@
 package amata1219.tosochu.command;
 
-import amata1219.tosochu.player.GamePlayer;
+import amata1219.tosochu.deprecated.OldGamePlayer;
 
 public interface Command {
 
 	String getName();
 
-	boolean hasPermission(GamePlayer player);
+	boolean hasPermission(OldGamePlayer player);
 
-	void onCommand(GamePlayer sender, Args args);
+	void onCommand(OldGamePlayer sender, Args args);
 
 }

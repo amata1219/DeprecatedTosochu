@@ -1,4 +1,4 @@
-package amata1219.tosochu;
+package amata1219.tosochu.deprecated;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,17 +14,18 @@ import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.collection.LockableHashSet;
 import amata1219.tosochu.collection.LockableHashSet.LockableHashSetLocker;
-import amata1219.tosochu.player.GamePlayer;
+import amata1219.tosochu.game.ImmutableLocation;
 
-public class GameManager implements Game {
+public class OldGameManager implements OldGame {
 
-	private final static GameManager GAME = new GameManager();
+	private final static OldGameManager GAME = new OldGameManager();
 
 	private BukkitTask task;
 
-	private LockableHashSetLocker<GamePlayer>
+	private LockableHashSetLocker<OldGamePlayer>
 		players = LockableHashSet.of(),
 		runaways = LockableHashSet.of(),
 		dropouts = LockableHashSet.of(),
@@ -48,21 +49,21 @@ public class GameManager implements Game {
 		respawnLocations = new HashMap<>(),
 		jailLocations = new HashMap<>();
 
-	private GameManager(){
+	private OldGameManager(){
 
 	}
 
-	public static GameManager getInstance(){
+	public static OldGameManager getInstance(){
 		return GAME;
 	}
 
 	@Override
-	public Set<GamePlayer> getPlayers() {
+	public Set<OldGamePlayer> getPlayers() {
 		return players.set;
 	}
 
 	@Override
-	public void addPlayer(GamePlayer player) {
+	public void addPlayer(OldGamePlayer player) {
 		if(isPlayer(player))
 			return;
 
@@ -70,7 +71,7 @@ public class GameManager implements Game {
 	}
 
 	@Override
-	public void removePlayer(GamePlayer player) {
+	public void removePlayer(OldGamePlayer player) {
 		if(!isPlayer(player))
 			return;
 
@@ -78,22 +79,22 @@ public class GameManager implements Game {
 	}
 
 	@Override
-	public Set<GamePlayer> getRunaways() {
+	public Set<OldGamePlayer> getRunaways() {
 		return runaways.set;
 	}
 
 	@Override
-	public Set<GamePlayer> getDropouts() {
+	public Set<OldGamePlayer> getDropouts() {
 		return dropouts.set;
 	}
 
 	@Override
-	public Set<GamePlayer> getHunterApplicants() {
+	public Set<OldGamePlayer> getHunterApplicants() {
 		return hunterApplicants.set;
 	}
 
 	@Override
-	public void applyForHunter(GamePlayer player) {
+	public void applyForHunter(OldGamePlayer player) {
 		if(isHunterApplicant(player)){
 			player.warning("既にハンターの募集に応募しています。");
 			return;
@@ -104,12 +105,12 @@ public class GameManager implements Game {
 	}
 
 	@Override
-	public Set<GamePlayer> getHunters() {
+	public Set<OldGamePlayer> getHunters() {
 		return hunters.set;
 	}
 
 	@Override
-	public Set<GamePlayer> getSpectators() {
+	public Set<OldGamePlayer> getSpectators() {
 		return spectators.set;
 	}
 
@@ -174,7 +175,7 @@ public class GameManager implements Game {
 
 	@Override
 	public void stop() {
-		for(GamePlayer player : getPlayers()){
+		for(OldGamePlayer player : getPlayers()){
 			if(isRunaway(player)){
 				player.sendTitle(ChatColor.YELLOW + "逃げ切り成功！");
 				player.depositMoney(player.getPrizeMoney());
@@ -231,7 +232,7 @@ public class GameManager implements Game {
 	}
 
 	@Override
-	public void touch(GamePlayer hunter, GamePlayer runaway) {
+	public void touch(OldGamePlayer hunter, OldGamePlayer runaway) {
 		broadcast(ChatColor.RED + runaway.getPlayer().getName() + "が確保された。");
 		runaways.bypass((set) -> set.remove(runaway));
 		dropouts.bypass((set) -> set.add(runaway));
@@ -239,13 +240,13 @@ public class GameManager implements Game {
 	}
 
 	@Override
-	public void jail(GamePlayer runaway) {
+	public void jail(OldGamePlayer runaway) {
 		ImmutableLocation location = new ArrayList<>(jailLocations.values()).get(new Random().nextInt(jailLocations.size()));
 		runaway.getPlayer().teleport(location.toLocation(world));
 	}
 
 	@Override
-	public void respawn(GamePlayer dropout) {
+	public void respawn(OldGamePlayer dropout) {
 		ImmutableLocation location = new ArrayList<>(respawnLocations.values()).get(new Random().nextInt(respawnLocations.size()));
 		dropout.getPlayer().teleport(location.toLocation(world));
 	}
@@ -289,7 +290,7 @@ public class GameManager implements Game {
 			public void run() {
 				int num = number;
 				boolean complete = false;
-				for(GamePlayer applicant : getHunterApplicants()){
+				for(OldGamePlayer applicant : getHunterApplicants()){
 					if(num > 0){
 						num--;
 						runaways.bypass((set) -> set.remove(applicant));
@@ -302,7 +303,7 @@ public class GameManager implements Game {
 
 				hunterApplicants.bypass((set) -> set.clear());
 				if(!complete){
-					for(GamePlayer runaway : getRunaways()){
+					for(OldGamePlayer runaway : getRunaways()){
 						if(num > 0){
 							num--;
 							runaways.bypass((set) -> set.remove(runaway));
@@ -318,7 +319,7 @@ public class GameManager implements Game {
 	}
 
 	@Override
-	public void setSpectator(GamePlayer player) {
+	public void setSpectator(OldGamePlayer player) {
 		player.information("スペクテイターモードになりました。");
 		player.getPlayer().setGameMode(GameMode.SPECTATOR);
 		runaways.bypass((set) -> set.remove(player));
