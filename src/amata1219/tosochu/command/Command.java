@@ -1,9 +1,13 @@
 package amata1219.tosochu.command;
 
+import amata1219.tosochu.player.GamePlayer;
+
 public interface Command {
 
 	String getName();
 
-	void onCommand(Sender sender, Args args);
+	boolean hasPermission(GamePlayer player);
+
+	void onCommand(GamePlayer sender, Args args);
 
 }
