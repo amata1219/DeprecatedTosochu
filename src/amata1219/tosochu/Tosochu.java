@@ -2,7 +2,9 @@ package amata1219.tosochu;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.WorldCreator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -71,6 +73,14 @@ public class Tosochu extends JavaPlugin {
 	public void registerListeners(Listener... listeners){
 		for(Listener listener : listeners)
 			getServer().getPluginManager().registerEvents(listener, this);
+	}
+
+	public void loadWorld(String name){
+		Bukkit.getServer().createWorld(new WorldCreator(name));
+	}
+
+	public void unloadWorld(String name){
+		Bukkit.getServer().unloadWorld(name, false);
 	}
 
 }
