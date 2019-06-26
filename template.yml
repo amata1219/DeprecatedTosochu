@@ -7,6 +7,17 @@ TimeLimit: 1800
 UnitPriceOfPrizeMoney: "50,100,150,200"
 #賞金単価: 各難易度の金額(Easy,Normal,Hard,Hardcore)
 
+RespawnCooldownTime: "0,60,120+30,300"
+#リスポーンのクールタイム: 各難易度のクールタイム(Easy,Normal,Hard,Hardcore)
+#+で2回目以降のクールタイムに加算する値を設定出来る
+
+CorrectionValueOfItemCoolTimes: "0,1,1.5,2"
+#アイテムのクールタイムに乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
+
+CorrectionValueOfNumberOfItems: "2,1,0.5,@2"
+#アイテムの配布数に乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
+#@を付けた場合はそれが個数になる
+
 ApplyRejoinPenalty: 30
 #リログインペナルティを課し始めるログアウト時間: 秒数
 
