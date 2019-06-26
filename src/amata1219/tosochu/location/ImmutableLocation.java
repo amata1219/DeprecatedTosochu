@@ -8,6 +8,11 @@ public class ImmutableLocation {
 		return new ImmutableLocation(x, y, z);
 	}
 
+	public static ImmutableLocation at(String xyz){
+		String[] values = xyz.split(",");
+		return at(Integer.valueOf(values[0]), Integer.valueOf(values[1]), Integer.valueOf(values[2]));
+	}
+
 	public ImmutableLocation(int x, int y, int z){
 		this.x = x;
 		this.y = y;

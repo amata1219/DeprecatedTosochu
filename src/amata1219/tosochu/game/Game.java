@@ -39,6 +39,8 @@ public class Game {
 	public final Map<Integer, ImmutableLocation> runawayRespawnPoints = new HashMap<>();
 	public final Map<Integer, ImmutableLocation> jailPoints = new HashMap<>();
 
+	private final int[] fallInpact = new int[256];
+
 	private final LockableArrayListLocker<Player> players = LockableArrayList.of();
 
 	private final LockableArrayListLocker<Player> runaways = LockableArrayList.of();
@@ -58,6 +60,7 @@ public class Game {
 		world = Bukkit.getWorld(config.name.replace(".yml", ""));
 
 		difficulty = Difficulty.valueOf(file.getString("Difficulty").toUpperCase());
+		unitPriceOfPrizeMoney = difficulty.getInteger(file.getString("UnitPriceOfPrizeMoney"));
 	}
 
 	public Difficulty getDifficulty(){

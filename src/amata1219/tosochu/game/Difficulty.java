@@ -7,4 +7,12 @@ public enum Difficulty {
 	HARD,
 	HARDCORE;
 
+	public int getInteger(String text){
+		return Integer.valueOf(getString(text));
+	}
+
+	public String getString(String text){
+		return text.split(",")[ordinal()];
+	}
+
 }
