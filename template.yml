@@ -4,6 +4,9 @@ PreparationTime: 30
 TimeLimit: 1800
 #制限時間: 秒数
 
+Dfficulty: Easy
+#難易度: Easy,Normal,Hard,Hardcore
+
 UnitPriceOfPrizeMoney: "50,100,150,200"
 #賞金単価: 各難易度の金額(Easy,Normal,Hard,Hardcore)
 
@@ -33,14 +36,14 @@ SpawnPoint:
 
   RunawayRespawn:
   #逃走者のリスポーン地点
+    0: 0,0,0
     1: 0,0,0
-    2: 0,0,0
     #地点名: x,y,z
 
-  Jails:
+  Jail:
   #確保された逃走者のスポーン地点
+    0: 0,0,0
     1: 0,0,0
-    2: 0,0,0
     #地点名: x,y,z
 
 Runaway:
