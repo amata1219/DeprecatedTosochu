@@ -1,0 +1,59 @@
+PreparationTime: 30
+#準備時間: 秒数
+
+TimeLimit: 1800
+#制限時間: 秒数
+
+UnitPriceOfPrizeMoney: "50,100,150,200"
+#賞金単価: 各難易度の金額(Easy,Normal,Hard,Hardcore)
+
+ApplyRejoinPenalty: 30
+#リログインペナルティを課し始めるログアウト時間: 秒数
+
+NPCTimeToLive: 20
+#NPCの生存可能時間: 秒数
+
+SpawnPoint:
+  First: 0,0,0
+  #ゲーム参加時のスポーン地点: x,y,z
+
+  Hunter: 0,0,0
+  #ハンターのスポーン地点: x,y,z
+
+  RunawayRespawn:
+  #逃走者のリスポーン地点
+    1: 0,0,0
+    2: 0,0,0
+    #地点名: x,y,z
+
+  Jails:
+  #確保された逃走者のスポーン地点
+    1: 0,0,0
+    2: 0,0,0
+    #地点名: x,y,z
+
+Runaway:
+#逃走者の設定
+
+  FallImpact:
+  #落下衝撃により付与される移動速度低下のレベル設定
+    1: 0
+    3: 1
+    5: 2
+    7: 3
+    #落下距離: レベル
+
+Hunter:
+#ハンターの設定
+
+  SpeedLevel: 2
+  #ハンターに付与される移動速度上昇のレベル
+
+Messages:
+#メッセージの設定
+
+  GamePrepare: ""
+  #ゲーム準備開始時のメッセージ
+
+  GameStart: "§4逃走中スタート！"
+  #ゲーム開始時のメッセージ

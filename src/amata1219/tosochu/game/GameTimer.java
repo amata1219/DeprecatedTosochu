@@ -4,7 +4,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class GameTimer extends BukkitRunnable {
 
-	public GameTimer(int timeLimit){
+	public GameTimer(){
 
 	}
 
