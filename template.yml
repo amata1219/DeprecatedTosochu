@@ -60,5 +60,8 @@ Runaway:
 Hunter:
 #ハンターの設定
 
+  NumberOfFirstRequired: 3
+  #初回ハンター募集人数
+
   SpeedLevel: 2
   #ハンターに付与される移動速度上昇のレベル

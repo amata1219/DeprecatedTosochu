@@ -14,9 +14,9 @@ import amata1219.tosochu.location.ImmutableLocation;
 
 public class Game {
 
-	private final String prefix = "";
+	private final String prefix = "§7[§4逃走中§7]§r";
 
-	private final MapSettingConfig settings;
+	public final MapSettingConfig settings;
 
 	public final World world;
 	public final Difficulty difficulty;
@@ -82,11 +82,6 @@ public class Game {
 		return getPlayers().contains(player);
 	}
 
-	public void join(Player player){
-		players.bypass((list) -> list.add(player));
-		runaways.bypass((list) -> list.add(player));
-	}
-
 	public List<Player> getRunaways(){
 		return runaways.list;
 	}
@@ -123,6 +118,14 @@ public class Game {
 		return hunterApplicants.list;
 	}
 
+	public void join(Player player){
+
+	}
+
+	public void quit(Player player){
+
+	}
+
 	//ハンターを募集しているか
 	public boolean isRecruiting(){
 		return requiredHunters > 0;
@@ -150,7 +153,29 @@ public class Game {
 
 	//応募者の中からハンターを決定する
 	public void decideHunters(){
+		int count = requiredHunters;
+		for(Player applicant : getHunterApplicants()){
+			if(count <= 0)
+				break;
 
+			runaways.bypass((list) -> list.remove(applicant));
+			dropouts.bypass((list) -> list.remove(applicant));
+			hunters.bypass((list) -> list.add(applicant));
+			applicant.sendMessage(prefix + "ハンターになりました。");
+		}
+
+		if(count > 0){
+			for(Player runaway : getRunaways()){
+				if(count <= 0)
+					break;
+
+				runaways.bypass((list) -> list.remove(runaway));
+				dropouts.bypass((list) -> list.remove(runaway));
+				runaway.sendMessage(prefix + "ハンターになりました。");
+			}
+		}
+
+		hunterApplicants.bypass((list) -> list.clear());
 	}
 
 	//現在のハンターの募集に応募したか
@@ -161,6 +186,7 @@ public class Game {
 	//ハンターの募集に応募する
 	public void applyForHunter(Player player){
 		hunterApplicants.bypass((list) -> list.add(player));
+		player.sendMessage(prefix + "ハンターの募集に応募しました。");
 	}
 
 	//参加者全員にメッセージを送信する
@@ -168,6 +194,11 @@ public class Game {
 		message = prefix + message;
 		for(Player player : getPlayers())
 			player.sendMessage(message);
+	}
+
+	public void broadcastTitle(String title, String subTitle){
+		for(Player player : getPlayers())
+			player.sendTitle(title, subTitle, 0, 50, 10);
 	}
 
 }

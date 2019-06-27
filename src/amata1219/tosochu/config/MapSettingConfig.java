@@ -193,6 +193,14 @@ public class MapSettingConfig extends Config {
 		return levels;
 	}
 
+	public int getNumberOfFirstRequiredHunters(){
+		return getInt("Hunter.NumberOfFirstRequiredHunters");
+	}
+
+	public void setNumberOfFirstRequiredHunters(int hunters){
+		set("NumberOfFirstRequiredHunters", hunters);
+	}
+
 	public int getHunterSpeedLevel(){
 		return getInt("Hunter.SpeedLevel");
 	}
