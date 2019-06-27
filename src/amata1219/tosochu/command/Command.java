@@ -1,13 +1,13 @@
 package amata1219.tosochu.command;
 
-import amata1219.tosochu.deprecated.OldGamePlayer;
+import org.bukkit.entity.Player;
 
 public interface Command {
 
 	String getName();
 
-	boolean hasPermission(OldGamePlayer player);
+	boolean hasPermission(Player player);
 
-	void onCommand(OldGamePlayer sender, Args args);
+	void onCommand(Player sender, Args args);
 
 }

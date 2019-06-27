@@ -1,9 +1,9 @@
 package amata1219.tosochu;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,37 +11,34 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
-import amata1219.tosochu.command.FirstSpawnCommand;
-import amata1219.tosochu.command.GameTimerCommand;
-import amata1219.tosochu.command.HsrCommand;
-import amata1219.tosochu.command.JailPointCommand;
-import amata1219.tosochu.command.RespawnPointCommand;
-import amata1219.tosochu.command.StartCommand;
-import amata1219.tosochu.player.GamePlayer;
+import amata1219.tosochu.config.Config;
 
 public class Tosochu extends JavaPlugin {
 
 	private static Tosochu plugin;
 
+	private File mapSettingsFolder;
 	private final HashMap<String, Command> commands = new HashMap<>();
+	private Config config;
+	private Config messages;
 
 	@Override
 	public void onEnable(){
 		plugin = this;
 
-		registerCommands(
-			new FirstSpawnCommand(),
-			new GameTimerCommand(),
-			new HsrCommand(),
-			new JailPointCommand(),
-			new RespawnPointCommand(),
-			new StartCommand()
-		);
+		mapSettingsFolder = new File(getDataFolder() + File.separator + "MapSettings");
 
-		for(Player player : getServer().getOnlinePlayers())
-			PlayerManager.getManager().registerPlayer(player);
+		config = new Config("config.yml").create();
+		messages = new Config("messages.yml").create();
+
+		registerCommands();
+
+		//for(Player player : getServer().getOnlinePlayers())
+
+		for(File file : getDataFolder().listFiles()){
+
+		}
 
 	}
 
@@ -52,17 +49,18 @@ public class Tosochu extends JavaPlugin {
 
 	@Override
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command input, String label, String[] args){
-		if(!(sender instanceof Player)) return true;
+		if(!(sender instanceof Player))
+			return true;
 
-		Command command = commands.get(input.getName());
-		GamePlayer player = ;
-		if(command.hasPermission(player))
-			command.onCommand(player, new Args(args));
 		return true;
 	}
 
 	public static Tosochu getPlugin(){
 		return plugin;
+	}
+
+	public File getMapSettingsFolder(){
+		return mapSettingsFolder;
 	}
 
 	public void registerCommands(Command... commands){

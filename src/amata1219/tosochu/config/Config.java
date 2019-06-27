@@ -1,4 +1,4 @@
-package amata1219.tosochu;
+package amata1219.tosochu.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,17 +9,24 @@ import java.nio.charset.StandardCharsets;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import amata1219.tosochu.Tosochu;
+
 public class Config {
 
 	private final Tosochu plugin = Tosochu.getPlugin();
 
-	public final String name;
+	private final String name;
 	private final File file;
 	private FileConfiguration config;
 
 	public Config(String name){
 		this.name = name;
 		this.file = new File(plugin.getDataFolder(), name);
+	}
+
+	public Config(String name, File file){
+		this.name = name;
+		this.file = file;
 	}
 
 	public Config create(){
@@ -33,8 +40,24 @@ public class Config {
 		return this;
 	}
 
+	public String getName(){
+		return name.substring(0, name.length() - 4);
+	}
+
 	public FileConfiguration get(){
 		return config == null ? reload() : config;
+	}
+
+	public String getString(String key){
+		return get().getString(key);
+	}
+
+	public int getInt(String key){
+		return get().getInt(key);
+	}
+
+	public double getDouble(String key){
+		return get().getDouble(key);
 	}
 
 	public void save(){

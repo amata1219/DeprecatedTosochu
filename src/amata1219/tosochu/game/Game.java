@@ -1,74 +1,77 @@
 package amata1219.tosochu.game;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import amata1219.tosochu.Config;
 import amata1219.tosochu.collection.LockableArrayList;
 import amata1219.tosochu.collection.LockableArrayList.LockableArrayListLocker;
+import amata1219.tosochu.config.MapSettingConfig;
 import amata1219.tosochu.location.ImmutableLocation;
 
 public class Game {
 
-	public final String prefix = ChatColor.GRAY + "[" + ChatColor.RED + "逃走中" + ChatColor.GRAY + "] " + ChatColor.RESET;
+	private final String prefix = "";
 
-	private final Config config;
+	private final MapSettingConfig settings;
 
 	public final World world;
-
 	public final Difficulty difficulty;
 
-	public final int preparationTime;
-	public final int timeLimit;
-	private int unitPriceOfPrizeMoney;
-	private int respawnCooldownTime;
-	private int correctionValueOfItemCoolTime;
-	public final int correctionValueOfNumberOfItems;
-	private int alreadyRejoinPenalty;
-	private int npcTimeToLive;
+	private int
+		unitPriceOfPrizeMoney,
+		respawnCooldownTime;
 
-	private ImmutableLocation firstSpawnPoint;
-	private ImmutableLocation hunterSpawnPoint;
-	public final Map<Integer, ImmutableLocation> runawayRespawnPoints = new HashMap<>();
-	public final Map<Integer, ImmutableLocation> jailPoints = new HashMap<>();
+	private final int
+		correctionValueForItemCoolTime,
+		correctionValueForItemStackSize,
+		applyRejoinPenalty,
+		npcTimeToLive;
 
-	private final int[] fallInpact = new int[256];
+	private ImmutableLocation
+		firstSpawnPoint,
+		hunterSpawnPoint;
 
-	private final LockableArrayListLocker<Player> players = LockableArrayList.of();
+	public final Map<Integer, ImmutableLocation>
+		runawayRespawnPoints,
+		jailPoints;
 
-	private final LockableArrayListLocker<Player> runaways = LockableArrayList.of();
-	private final LockableArrayListLocker<Player> dropouts = LockableArrayList.of();
-	private final LockableArrayListLocker<Player> hunters = LockableArrayList.of();
-	private final LockableArrayListLocker<Player> spectators = LockableArrayList.of();
+	private final int[] fallImpact;
+
+	private final LockableArrayListLocker<Player>
+		players = LockableArrayList.of(),
+		runaways = LockableArrayList.of(),
+		dropouts = LockableArrayList.of(),
+		hunters = LockableArrayList.of(),
+		spectators = LockableArrayList.of();
 
 	private int requiredHunters;
 	private final LockableArrayListLocker<Player> hunterApplicants = LockableArrayList.of();
 
-	private Game(Config config){
-		this.config = config;
+	private Game(MapSettingConfig settings){
+		this.settings = settings;
 
-		FileConfiguration file = config.get();
+		world = settings.getMap();
+		difficulty = settings.getDifficulty();
 
-		//設定ファイル名に対応したワールドを代入する
-		world = Bukkit.getWorld(config.name.replace(".yml", ""));
+		unitPriceOfPrizeMoney = settings.getUnitPriceOfPrizeMoney();
+		respawnCooldownTime = settings.getRespawnCooldownTime();
 
-		difficulty = Difficulty.valueOf(file.getString("Difficulty").toUpperCase());
-		unitPriceOfPrizeMoney = difficulty.getInteger(file.getString("UnitPriceOfPrizeMoney"));
-	}
+		correctionValueForItemCoolTime = settings.getCorrectionValueForItemCooldownTime();
+		correctionValueForItemStackSize = settings.getCorrectionValueForItemStackSize();
+		applyRejoinPenalty = settings.getApplyRejoinPenalty();
+		npcTimeToLive = settings.getNPCTimeToLive();
 
-	public Difficulty getDifficulty(){
-		return difficulty;
-	}
+		firstSpawnPoint = settings.getFirstSpawnPoint();
+		hunterSpawnPoint = settings.getHunterSpawnPoint();
 
-	public World getWorld(){
-		return world;
+		runawayRespawnPoints = settings.getRunawayRespawnPoints();
+		jailPoints = settings.getJailSpawnPoints();
+
+		fallImpact = settings.getFallImpact();
 	}
 
 	public List<Player> getPlayers(){

@@ -14,10 +14,10 @@ RespawnCooldownTime: "0,60,120+30,300"
 #リスポーンのクールタイム: 各難易度のクールタイム(Easy,Normal,Hard,Hardcore)
 #+で2回目以降のクールタイムに加算する値を設定出来る
 
-CorrectionValueOfItemCoolTimes: "0,1,1.5,2"
+CorrectionValueForItemCoolTime: "0,1,1.5,2"
 #アイテムのクールタイムに乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
 
-CorrectionValueOfNumberOfItems: "2,1,0.5,@2"
+CorrectionValueForItemStackSize: "2,1,0.5,@2"
 #アイテムの配布数に乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
 #@を付けた場合はそれが個数になる
 
@@ -27,11 +27,11 @@ ApplyRejoinPenalty: 30
 NPCTimeToLive: 20
 #NPCの生存可能時間: 秒数
 
-SpawnPoint:
-  First: 0,0,0
+Point:
+  FirstSpawn: 0,0,0
   #ゲーム参加時のスポーン地点: x,y,z
 
-  Hunter: 0,0,0
+  HunterSpawn: 0,0,0
   #ハンターのスポーン地点: x,y,z
 
   RunawayRespawn:
@@ -40,7 +40,7 @@ SpawnPoint:
     1: 0,0,0
     #地点名: x,y,z
 
-  Jail:
+  JailSpawn:
   #確保された逃走者のスポーン地点
     0: 0,0,0
     1: 0,0,0
