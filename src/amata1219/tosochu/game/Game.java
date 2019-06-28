@@ -6,10 +6,16 @@ import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.collection.LockableArrayList;
 import amata1219.tosochu.collection.LockableArrayList.LockableArrayListLocker;
 import amata1219.tosochu.config.MapSettingConfig;
+import amata1219.tosochu.game.timer.GameTimer;
+import amata1219.tosochu.game.timer.PreparationTimer;
+import amata1219.tosochu.game.timer.Timer;
 import amata1219.tosochu.location.ImmutableLocation;
 
 public class Game {
@@ -46,10 +52,15 @@ public class Game {
 		runaways = LockableArrayList.of(),
 		dropouts = LockableArrayList.of(),
 		hunters = LockableArrayList.of(),
-		spectators = LockableArrayList.of();
+		spectators = LockableArrayList.of(),
+		hunterApplicants = LockableArrayList.of(),
+		quittedPlayers = LockableArrayList.of();
 
 	private int requiredHunters;
-	private final LockableArrayListLocker<Player> hunterApplicants = LockableArrayList.of();
+
+	private Timer
+		preparationTimer,
+		gameTimer;
 
 	private Game(MapSettingConfig settings){
 		this.settings = settings;
@@ -118,12 +129,53 @@ public class Game {
 		return hunterApplicants.list;
 	}
 
-	public void join(Player player){
+	//ゲームの準備を開始する
+	public void prepare(){
+		if(preparationTimer != null)
+			throw new IllegalStateException("Game preparation has already been started");
 
+		(preparationTimer = new PreparationTimer(this)).runTaskTimer(Tosochu.getPlugin(), 20, 20);
+	}
+
+	//ゲームを開始する
+	public void start(){
+		if(gameTimer != null)
+			throw new IllegalStateException("The game has already been started");
+
+		(gameTimer = new GameTimer(this)).runTaskTimer(Tosochu.getPlugin(), 20, 20);
+	}
+
+	//ゲームを強制終了する
+	public void end(){
+		preparationTimer.end();
+		gameTimer.end();
+	}
+
+	public void join(Player player){
+		if(isJoined(player))
+			return;
+
+		if(!preparationTimer.isZero()){
+			players.bypass((list) -> list.add(player));
+		}else if(gameTimer.getElapsedTime() < settings.getForceSpectatorTimeThreshold()){
+			becomeRunaway(player);
+			message(player, "あなたは逃走者になりました。");
+		}else{
+			becomeSpectator(player);
+			message(player, "あなたは観戦者になりました。");
+		}
 	}
 
 	public void quit(Player player){
+		if(!isJoined(player))
+			return;
 
+
+	}
+
+	public void fall(Player player){
+		if(isRunaway(player))
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 140, fallImpact[Math.max((int) player.getFallDistance(), 255)]));
 	}
 
 	//ハンターを募集しているか
@@ -135,11 +187,11 @@ public class Game {
 	public void recruitHunters(int requiredHunters){
 		//既に募集をしていたらエラー
 		if(isRecruiting())
-			throw new IllegalArgumentException("Already recruiting hunters");
+			throw new IllegalStateException("Recruitment of hunters has already started");
 
 		//募集人数が0以下であればエラー
 		if(requiredHunters <= 0)
-			throw new IllegalArgumentException("Required hunters can not be less than or qual to 0");
+			throw new IllegalArgumentException("Required hunters can not be less than or equal to 0");
 
 		this.requiredHunters = requiredHunters;
 
@@ -158,10 +210,8 @@ public class Game {
 			if(count <= 0)
 				break;
 
-			runaways.bypass((list) -> list.remove(applicant));
-			dropouts.bypass((list) -> list.remove(applicant));
-			hunters.bypass((list) -> list.add(applicant));
-			applicant.sendMessage(prefix + "ハンターになりました。");
+			becomeHunter(applicant);
+			message(applicant, "あなたはハンターになりました。");
 		}
 
 		if(count > 0){
@@ -169,9 +219,8 @@ public class Game {
 				if(count <= 0)
 					break;
 
-				runaways.bypass((list) -> list.remove(runaway));
-				dropouts.bypass((list) -> list.remove(runaway));
-				runaway.sendMessage(prefix + "ハンターになりました。");
+				becomeHunter(runaway);
+				message(runaway, "あなたはハンターになりました。");
 			}
 		}
 
@@ -186,7 +235,50 @@ public class Game {
 	//ハンターの募集に応募する
 	public void applyForHunter(Player player){
 		hunterApplicants.bypass((list) -> list.add(player));
-		player.sendMessage(prefix + "ハンターの募集に応募しました。");
+		message(player, "ハンターの募集に応募しました。");
+	}
+
+	public void becomeRunaway(Player player){
+		if(isJoined(player) || isHunter(player) || isRunaway(player) || isSpectator(player))
+			return;
+
+		dropouts.bypass((list) -> list.remove(player));
+
+		runaways.bypass((list) -> list.add(player));
+	}
+
+	public void becomeDropout(Player player){
+		if(!isJoined(player) || isHunter(player) || !isRunaway(player) || isSpectator(player))
+			return;
+
+		runaways.bypass((list) -> list.remove(player));
+
+		dropouts.bypass((list) -> list.add(player));
+	}
+
+	public void becomeHunter(Player player){
+		if(!isJoined(player) || !isHunter(player) || isSpectator(player))
+			return;
+
+		runaways.bypass((list) -> list.remove(player));
+		dropouts.bypass((list) -> list.remove(player));
+
+		hunters.bypass((list) -> list.add(player));
+	}
+
+	public void becomeSpectator(Player player){
+		if(!isJoined(player) || isSpectator(player))
+			return;
+
+		runaways.bypass((list) -> list.remove(player));
+		dropouts.bypass((list) -> list.remove(player));
+		hunters.bypass((list) -> list.remove(player));
+
+		spectators.bypass((list) -> list.add(player));
+	}
+
+	public void message(Player receiver, String message){
+		receiver.sendMessage(prefix + message);
 	}
 
 	//参加者全員にメッセージを送信する

@@ -1,18 +1,32 @@
 package amata1219.tosochu.game.timer;
 
-import org.bukkit.scheduler.BukkitRunnable;
-
 import amata1219.tosochu.game.Game;
 
-public abstract class GameTimer extends BukkitRunnable {
+public class GameTimer extends Timer {
 
-	protected final Game game;
-	protected int count;
-
-	protected GameTimer(Game game){
-		this.game = game;
+	public GameTimer(Game game) {
+		super(game, game.settings.getTimeLimit());
 	}
 
-	public abstract void initialize();
+	@Override
+	public void run() {
+		if(isZero()){
+			end();
+			return;
+		}
+	}
+
+	@Override
+	public void start() {
+		game.decideHunters();
+	}
+
+	@Override
+	public void end(){
+		if(isCancelled())
+			return;
+
+		cancel();
+	}
 
 }

@@ -105,6 +105,14 @@ public class MapSettingConfig extends Config {
 		return getDifficulty().getString(getString("CorrectionValueForItemStackSize")).indexOf("@") == 1;
 	}
 
+	public int getForceSpectatorTimeThreshold(){
+		return getInt("ForceSpectatorTimeThreshold");
+	}
+
+	public void setForceSpectatorTimeThreshold(int forceSpectatorTimeThreshold){
+		set("ForceSpectatorTimeThreshold", forceSpectatorTimeThreshold);
+	}
+
 	public int getApplyRejoinPenalty(){
 		return getInt("ApplyRejoinPenalty");
 	}

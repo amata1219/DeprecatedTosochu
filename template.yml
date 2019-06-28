@@ -21,6 +21,8 @@ CorrectionValueForItemStackSize: "2,1,0.5,@2"
 #アイテムの配布数に乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
 #@を付けた場合はそれが個数になる
 
+ForceSpectatorTimeThreshold: 120
+
 ApplyRejoinPenalty: 30
 #リログインペナルティを課し始めるログアウト時間: 秒数
 
