@@ -12,6 +12,8 @@ import org.bukkit.potion.PotionEffectType;
 import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.collection.LockableArrayList;
 import amata1219.tosochu.collection.LockableArrayList.LockableArrayListLocker;
+import amata1219.tosochu.collection.LockableHashMap;
+import amata1219.tosochu.collection.LockableHashMap.LockableHashMapLocker;
 import amata1219.tosochu.config.MapSettingConfig;
 import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
@@ -53,8 +55,9 @@ public class Game {
 		dropouts = LockableArrayList.of(),
 		hunters = LockableArrayList.of(),
 		spectators = LockableArrayList.of(),
-		hunterApplicants = LockableArrayList.of(),
-		quittedPlayers = LockableArrayList.of();
+		hunterApplicants = LockableArrayList.of();
+
+	private final LockableHashMapLocker<Player, Long> quittedPlayers = LockableHashMap.of();
 
 	private int requiredHunters;
 
@@ -129,6 +132,10 @@ public class Game {
 		return hunterApplicants.list;
 	}
 
+	public boolean isQuitted(Player player){
+		return quittedPlayers.map.containsKey(player);
+	}
+
 	//ゲームの準備を開始する
 	public void prepare(){
 		if(preparationTimer != null)
@@ -155,8 +162,13 @@ public class Game {
 		if(isJoined(player))
 			return;
 
-		if(!preparationTimer.isZero()){
+		players.bypass((list) -> list.add(player));
+		if(!preparationTimer.isZero())
+			return;
+
+		if(isQuitted(player)){
 			players.bypass((list) -> list.add(player));
+			becomeRunaway(player);
 		}else if(gameTimer.getElapsedTime() < settings.getForceSpectatorTimeThreshold()){
 			becomeRunaway(player);
 			message(player, "あなたは逃走者になりました。");
@@ -170,7 +182,14 @@ public class Game {
 		if(!isJoined(player))
 			return;
 
+		removePlayer(player);
+		removeRunaway(player);
+		removeDropout(player);
+		removeHunter(player);
+		removeSpectator(player);
+		removeHunterApplicant(player);
 
+		quittedPlayers.bypass((map) -> map.put(player, System.currentTimeMillis()));
 	}
 
 	public void fall(Player player){
@@ -242,7 +261,7 @@ public class Game {
 		if(isJoined(player) || isHunter(player) || isRunaway(player) || isSpectator(player))
 			return;
 
-		dropouts.bypass((list) -> list.remove(player));
+		removeDropout(player);
 
 		runaways.bypass((list) -> list.add(player));
 	}
@@ -251,7 +270,7 @@ public class Game {
 		if(!isJoined(player) || isHunter(player) || !isRunaway(player) || isSpectator(player))
 			return;
 
-		runaways.bypass((list) -> list.remove(player));
+		removeRunaway(player);
 
 		dropouts.bypass((list) -> list.add(player));
 	}
@@ -260,8 +279,9 @@ public class Game {
 		if(!isJoined(player) || !isHunter(player) || isSpectator(player))
 			return;
 
-		runaways.bypass((list) -> list.remove(player));
-		dropouts.bypass((list) -> list.remove(player));
+		removeRunaway(player);
+		removeDropout(player);
+		removeHunterApplicant(player);
 
 		hunters.bypass((list) -> list.add(player));
 	}
@@ -270,9 +290,10 @@ public class Game {
 		if(!isJoined(player) || isSpectator(player))
 			return;
 
-		runaways.bypass((list) -> list.remove(player));
-		dropouts.bypass((list) -> list.remove(player));
-		hunters.bypass((list) -> list.remove(player));
+		removeRunaway(player);
+		removeDropout(player);
+		removeHunter(player);
+		removeHunterApplicant(player);
 
 		spectators.bypass((list) -> list.add(player));
 	}
@@ -291,6 +312,30 @@ public class Game {
 	public void broadcastTitle(String title, String subTitle){
 		for(Player player : getPlayers())
 			player.sendTitle(title, subTitle, 0, 50, 10);
+	}
+
+	private void removePlayer(Player player){
+		players.bypass((list) -> list.remove(player));
+	}
+
+	private void removeRunaway(Player runaway){
+		runaways.bypass((list) -> list.remove(runaway));
+	}
+
+	private void removeDropout(Player dropout){
+		dropouts.bypass((list) -> list.remove(dropout));
+	}
+
+	private void removeHunter(Player hunter){
+		hunters.bypass((list) -> list.remove(hunter));
+	}
+
+	private void removeSpectator(Player spectator){
+		spectators.bypass((list) -> list.remove(spectator));
+	}
+
+	private void removeHunterApplicant(Player applicant){
+		hunterApplicants.bypass((list) -> list.remove(applicant));
 	}
 
 }
