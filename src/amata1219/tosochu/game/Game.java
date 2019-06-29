@@ -167,6 +167,10 @@ public class Game {
 		return professions.get(player) == profession;
 	}
 
+	public void setProfession(Player player, Profession profession){
+		professions.put(player, profession);
+	}
+
 	private List<Player> getPlayers(Profession profession){
 		List<Player> list = new ArrayList<>();
 		for(Entry<Player, Profession> entry : professions.entrySet())
@@ -363,17 +367,14 @@ public class Game {
 		if(isJoined(player) || isHunter(player) || isRunaway(player) || isSpectator(player))
 			return;
 
-		removeDropout(player);
-
-		runaways.bypass((list) -> list.add(player));
+		setProfession(player, Profession.RUNAWAY);
 	}
 
 	public void becomeDropout(Player player){
 		if(!isJoined(player) || !isRunaway(player))
 			return;
 
-		removeRunaway(player);
-
+		setProfession(player, Profession.DROPOUT);
 		dropouts.bypass((map) -> map.put(player, System.currentTimeMillis()));
 
 		getDisplayer(player).updateProfession();
@@ -393,11 +394,9 @@ public class Game {
 		if(!isJoined(player) || !isHunter(player) || isSpectator(player))
 			return;
 
-		removeRunaway(player);
-		removeDropout(player);
 		removeHunterApplicant(player);
 
-		hunters.bypass((list) -> list.add(player));
+		setProfession(player, Profession.HUNTER);
 
 		getDisplayer(player).updateProfession();
 
@@ -408,12 +407,9 @@ public class Game {
 		if(!isJoined(player) || isSpectator(player))
 			return;
 
-		removeRunaway(player);
-		removeDropout(player);
-		removeHunter(player);
 		removeHunterApplicant(player);
 
-		spectators.bypass((list) -> list.add(player));
+		setProfession(player, Profession.SPECTATOR);
 
 		getDisplayer(player).updateProfession();
 	}
@@ -432,26 +428,6 @@ public class Game {
 	public void broadcastTitle(String title, String subTitle){
 		for(Player player : getPlayers())
 			player.sendTitle(title, subTitle, 0, 50, 10);
-	}
-
-	private void removePlayer(Player player){
-		players.bypass((list) -> list.remove(player));
-	}
-
-	private void removeRunaway(Player runaway){
-		runaways.bypass((list) -> list.remove(runaway));
-	}
-
-	private void removeDropout(Player dropout){
-		dropouts.bypass((list) -> list.remove(dropout));
-	}
-
-	private void removeHunter(Player hunter){
-		hunters.bypass((list) -> list.remove(hunter));
-	}
-
-	private void removeSpectator(Player spectator){
-		spectators.bypass((list) -> list.remove(spectator));
 	}
 
 	private void removeHunterApplicant(Player applicant){
