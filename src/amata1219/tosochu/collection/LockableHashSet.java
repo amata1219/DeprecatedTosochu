@@ -93,6 +93,7 @@ public class LockableHashSet<E> extends HashSet<E> implements Lockable {
 
 		public void bypass(Consumer<LockableHashSet<E>> consumer){
 			final boolean lock = set.isLocked();
+			set.setLock(set.key, false);
 			consumer.accept(set);
 			set.setLock(set.key, lock);
 		}

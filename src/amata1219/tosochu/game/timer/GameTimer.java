@@ -23,7 +23,6 @@ public class GameTimer extends Timer {
 
 	@Override
 	public void start() {
-		game.decideHunters();
 	}
 
 	@Override

@@ -28,14 +28,14 @@ public class Game {
 	public static Game game;
 
 	public static boolean isInGame(){
-		return game != null;
+		return game != null && game.preparationTimer != null;
 	}
 
-	public static void loadGame(MapSettingConfig settings){
+	public static Game loadGame(MapSettingConfig settings){
 		if(isInGame())
 			new IllegalStateException("The game is currently being played");
 
-		game = new Game(settings);
+		return game = new Game(settings);
 	}
 
 	public static void unloadGame(){
@@ -53,8 +53,9 @@ public class Game {
 		unitPriceOfPrizeMoney,
 		respawnCooldownTime;
 
+	private final double correctionValueForItemCoolTime;
+
 	private final int
-		correctionValueForItemCoolTime,
 		correctionValueForItemStackSize,
 		applyRejoinPenalty,
 		npcTimeToLive;
@@ -78,7 +79,8 @@ public class Game {
 
 	private final LockableHashMapLocker<Player, Long>
 		dropouts = LockableHashMap.of(),
-		quittedPlayers = LockableHashMap.of();
+		quittedPlayers = LockableHashMap.of(),
+		quittedHunters = LockableHashMap.of();
 
 	private int requiredHunters;
 
@@ -100,7 +102,7 @@ public class Game {
 
 		correctionValueForItemCoolTime = settings.getCorrectionValueForItemCooldownTime();
 		correctionValueForItemStackSize = settings.getCorrectionValueForItemStackSize();
-		applyRejoinPenalty = settings.getApplyRejoinPenalty();
+		applyRejoinPenalty = settings.getApplyRejoinPenalty() * 1000;
 		npcTimeToLive = settings.getNPCTimeToLive();
 
 		firstSpawnPoint = settings.getFirstSpawnPoint();
@@ -184,11 +186,19 @@ public class Game {
 		if(gameTimer != null)
 			throw new IllegalStateException("The game has already been started");
 
+		broadcastTitle(ChatColor.RED + "逃走中スタート！", "");
+
+		decideHunters();
+		for(Player player : getPlayers()){
+			if(!isHunter(player))
+				runawayMoney.put(player, 0);
+		}
 		(gameTimer = new GameTimer(this)).runTaskTimer(Tosochu.getPlugin(), 20, 20);
 	}
 
 	//ゲームを強制終了する
 	public void end(){
+		broadcast("ゲームが強制終了されました。");
 		preparationTimer.end();
 		gameTimer.end();
 	}
@@ -211,8 +221,13 @@ public class Game {
 
 		if(isQuitted(player)){
 			players.bypass((list) -> list.add(player));
-			becomeRunaway(player);
-			runawayMoney.put(player, 0);
+			if(System.currentTimeMillis() - quittedHunters.map.getOrDefault(player, 0L) >= applyRejoinPenalty){
+				quittedHunters.bypass((map) -> map.remove(player));
+				becomeHunter(player);
+			}else{
+				becomeRunaway(player);
+				runawayMoney.put(player, 0);
+			}
 		}else if(gameTimer.getElapsedTime() < settings.getForceSpectatorTimeThreshold()){
 			becomeRunaway(player);
 			runawayMoney.put(player, 0);
@@ -228,6 +243,9 @@ public class Game {
 	public void quit(Player player){
 		if(!isJoined(player))
 			return;
+
+		if(isHunter(player))
+			quittedHunters.bypass((map) -> map.put(player, System.currentTimeMillis()));
 
 		removePlayer(player);
 		removeRunaway(player);

@@ -15,9 +15,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
+import amata1219.tosochu.command.EndCommand;
+import amata1219.tosochu.command.StartCommand;
+import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
 import amata1219.tosochu.config.MapSettingConfig;
+import amata1219.tosochu.game.Game;
 import amata1219.tosochu.playerdata.PlayerData;
 
 public class Tosochu extends JavaPlugin implements Listener {
@@ -39,11 +44,20 @@ public class Tosochu extends JavaPlugin implements Listener {
 		plugin = this;
 
 		mapSettingsFolder = new File(getDataFolder() + File.separator + "MapSettings");
+		if(!mapSettingsFolder.exists())
+			mapSettingsFolder.mkdirs();
 
 		config = new Config("config.yml").create();
 		messages = new Config("messages.yml").create();
 
-		registerCommands();
+		//テンプレートファイルを作成する
+		new Config("template.yml").create();
+
+		registerCommands(
+			new StartCommand(),
+			new EndCommand(),
+			new WorldTeleportCommand()
+		);
 
 		registerListeners(
 			this,
@@ -52,13 +66,19 @@ public class Tosochu extends JavaPlugin implements Listener {
 
 		reloadMapSettings();
 
-		//for(Player player : getServer().getOnlinePlayers())
+		for(Player player : getServer().getOnlinePlayers()){
+			UUID uuid = player.getUniqueId();
+			if(!players.containsKey(uuid))
+				players.put(uuid, new PlayerData(uuid));
+		}
 
 	}
 
 	@Override
 	public void onDisable(){
 		HandlerList.unregisterAll((JavaPlugin) this);
+
+		Game.game = null;
 	}
 
 	@Override
@@ -66,6 +86,10 @@ public class Tosochu extends JavaPlugin implements Listener {
 		if(!(sender instanceof Player))
 			return true;
 
+		Player player = (Player) sender;
+		Command command = commands.get(input.getName());
+		if(command.hasPermission(player))
+			command.onCommand(player, new Args(args));
 		return true;
 	}
 
@@ -84,6 +108,10 @@ public class Tosochu extends JavaPlugin implements Listener {
 			MapSettingConfig settings = new MapSettingConfig(file.getName());
 			mapSettings.put(settings.getName(), settings);
 		}
+	}
+
+	public MapSettingConfig getMapSettings(String worldName){
+		return mapSettings.get(worldName);
 	}
 
 	public void registerCommands(Command... commands){
@@ -107,7 +135,7 @@ public class Tosochu extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent event){
 		UUID uuid = event.getPlayer().getUniqueId();
-		if(players.containsKey(uuid))
+		if(!players.containsKey(uuid))
 			players.put(uuid, new PlayerData(uuid));
 	}
 

@@ -10,7 +10,7 @@ Dfficulty: Easy
 UnitPriceOfPrizeMoney: "50,100,150,200"
 #賞金単価: 各難易度の金額(Easy,Normal,Hard,Hardcore)
 
-RespawnCooldownTime: "0,60,120+30,300"
+RespawnCooldownTime: "0,60,120@30,300"
 #リスポーンのクールタイム: 各難易度のクールタイム(Easy,Normal,Hard,Hardcore)
 #+で2回目以降のクールタイムに加算する値を設定出来る
 

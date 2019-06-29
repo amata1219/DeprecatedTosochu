@@ -37,7 +37,7 @@ public class MapSettingConfig extends Config {
 	}
 
 	public Difficulty getDifficulty(){
-		return Difficulty.valueOf(getString("Difficulty"));
+		return Difficulty.valueOf(getString("Dfficulty").toUpperCase());
 	}
 
 	public void setDifficulty(Difficulty difficulty){
@@ -55,38 +55,38 @@ public class MapSettingConfig extends Config {
 	}
 
 	public int getRespawnCooldownTime(){
-		return Integer.valueOf(getDifficulty().getString(getString("RespawnCooldownTime")).split("+")[0]);
+		return Integer.valueOf(getDifficulty().getString(getString("RespawnCooldownTime")).split("@")[0]);
 	}
 
 	public void setRespawnCooldownTime(int respawnCooldownTime){
 		String[] values = getString("RespawnCooldownTime").split(",");
 		int ordinal = getDifficulty().ordinal();
-		String[] times = values[ordinal].split("+");
-		values[ordinal] = times.length == 1 ? String.valueOf(respawnCooldownTime) : respawnCooldownTime + "+" + times[1];
+		String[] times = values[ordinal].split("@");
+		values[ordinal] = times.length == 1 ? String.valueOf(respawnCooldownTime) : respawnCooldownTime + "@" + times[1];
 		set("RespawnCooldownTime", String.join(",", values));
 	}
 
 	public int getSecondaryRespawnCooldownTime(){
-		String[] times = getDifficulty().getString(getString("RespawnCooldownTime")).split("+");
+		String[] times = getDifficulty().getString(getString("RespawnCooldownTime")).split("@");
 		return Integer.valueOf(times.length == 1 ? times[0] : times[1]);
 	}
 
 	public void setSecondaryRespawnCooldownTime(int secondaryRespawnCooldownTime){
 		String[] values = getString("RespawnCooldownTime").split(",");
 		int ordinal = getDifficulty().ordinal();
-		String[] times = values[ordinal].split("+");
-		values[ordinal] = times[0] + "+" + secondaryRespawnCooldownTime;
+		String[] times = values[ordinal].split("@");
+		values[ordinal] = times[0] + "@" + secondaryRespawnCooldownTime;
 		set("RespawnCooldownTime", String.join(",", values));
 	}
 
-	public int getCorrectionValueForItemCooldownTime(){
-		return getDifficulty().getInteger(getString("CorrectionValueForItemCooldownTime"));
+	public double getCorrectionValueForItemCooldownTime(){
+		return getDifficulty().getDouble(getString("CorrectionValueForItemCoolTime"));
 	}
 
 	public void setCorrectionValueForItemCooldownTime(int correctionValueForItemCooldownTime){
-		String[] values = getString("CorrectionValueForItemCooldownTime").split(",");
+		String[] values = getString("CorrectionValueForItemCoolTime").split(",");
 		values[getDifficulty().ordinal()] = String.valueOf(correctionValueForItemCooldownTime);
-		set("CorrectionValueForItemCooldownTime", String.join(",", values));
+		set("CorrectionValueForItemCoolTime", String.join(",", values));
 	}
 
 	public int getCorrectionValueForItemStackSize(){

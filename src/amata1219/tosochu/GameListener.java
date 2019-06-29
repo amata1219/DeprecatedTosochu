@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import amata1219.tosochu.game.Game;
+import amata1219.tosochu.game.scoreboard.StatesDisplayer;
 
 public class GameListener implements Listener {
 
@@ -105,12 +106,13 @@ public class GameListener implements Listener {
 
 		Inventory inventory = player.getInventory();
 		ItemStack item = inventory.getItem(event.getNewSlot());
-		Game.game.getDisplayer(player).setDisplay(item == null ? false : item.getType() == Material.BOOK);
+		StatesDisplayer displayer = Game.game.getDisplayer(player);
+		if(displayer != null)
+			displayer.setDisplay(item == null ? false : item.getType() == Material.BOOK);
 	}
 
 	private boolean shouldRun(Entity entity){
-		World world = entity.getWorld();
-		return Game.isInGame() && (world == null || Game.game.world.equals(world));
+		return Game.isInGame() && (entity == null || Game.game.world.equals(entity.getWorld()));
 	}
 
 	private boolean isPlayer(Entity entity){

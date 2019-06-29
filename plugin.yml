@@ -4,9 +4,6 @@ version: 1.0.0
 author: amata1219(Twitter@amata1219)
 
 commands:
-  firstsp:
-  gametimer:
-  hsr:
-  jailp:
-  rp:
   start:
+  g_end:
+  worldtp:

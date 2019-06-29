@@ -10,7 +10,7 @@ public class PlayerData {
 
 	public final UUID uuid;
 
-	private Permission permission;
+	private Permission permission = Permission.ADMINISTRATOR;
 
 	private int money;
 	private int countOfWins;

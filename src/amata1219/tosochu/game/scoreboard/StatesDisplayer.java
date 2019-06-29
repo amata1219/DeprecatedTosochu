@@ -16,7 +16,7 @@ public class StatesDisplayer {
 	private final Player player;
 
 	private final Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-	private final Objective objective = board.registerNewObjective(ChatColor.AQUA + "- Run for Money -", "dummy");
+	private final Objective objective = board.registerNewObjective(ChatColor.AQUA + "- 逃走中 -", "dummy");
 
 	private String playerCount, profession, money;
 
@@ -34,7 +34,7 @@ public class StatesDisplayer {
 	}
 
 	public void setDisplay(boolean display){
-		player.setScoreboard(display ? board : null);
+		player.setScoreboard(display ? board : Bukkit.getScoreboardManager().getNewScoreboard());
 	}
 
 	public void updatePlayerCount(){

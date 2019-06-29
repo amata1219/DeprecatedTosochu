@@ -165,6 +165,7 @@ public class LockableArrayList<E> extends ArrayList<E> implements Lockable {
 
 		public void bypass(Consumer<LockableArrayList<E>> consumer){
 			final boolean lock = list.isLocked();
+			list.setLock(list.key, false);
 			consumer.accept(list);
 			list.setLock(list.key, lock);
 		}

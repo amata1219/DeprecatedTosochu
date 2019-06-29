@@ -156,6 +156,7 @@ public class LockableHashMap<K, V> extends HashMap<K, V> implements Lockable {
 
 		public void bypass(Consumer<LockableHashMap<K, V>> consumer){
 			final boolean lock = map.isLocked();
+			map.setLock(map.key, false);
 			consumer.accept(map);
 			map.setLock(map.key, lock);
 		}
