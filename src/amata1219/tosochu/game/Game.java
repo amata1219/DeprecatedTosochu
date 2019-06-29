@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -16,7 +20,7 @@ import amata1219.tosochu.collection.LockableArrayList;
 import amata1219.tosochu.collection.LockableArrayList.LockableArrayListLocker;
 import amata1219.tosochu.collection.LockableHashMap;
 import amata1219.tosochu.collection.LockableHashMap.LockableHashMapLocker;
-import amata1219.tosochu.config.MapSettingConfig;
+import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.scoreboard.StatesDisplayer;
 import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
@@ -31,7 +35,7 @@ public class Game {
 		return game != null && game.preparationTimer != null;
 	}
 
-	public static Game loadGame(MapSettingConfig settings){
+	public static Game loadGame(MapSettings settings){
 		if(isInGame())
 			new IllegalStateException("The game is currently being played");
 
@@ -44,54 +48,43 @@ public class Game {
 
 	private final String prefix = "§7[§4逃走中§7]§r";
 
-	public final MapSettingConfig settings;
+	public MapSettings settings;
 
 	public final World world;
 	public final Difficulty difficulty;
 
-	private int
-		unitPriceOfPrizeMoney,
-		respawnCooldownTime;
+	private int unitPriceOfPrizeMoney;
+	private int respawnCooldownTime;
+	private double correctionValueForItemCoolTime;
+	private int correctionValueForItemStackSize;
+	private int applyRejoinPenalty;
+	private int npcTimeToLive;
 
-	private final double correctionValueForItemCoolTime;
+	private ImmutableLocation firstSpawnPoint;
+	private ImmutableLocation hunterSpawnPoint;
 
-	private final int
-		correctionValueForItemStackSize,
-		applyRejoinPenalty,
-		npcTimeToLive;
-
-	private ImmutableLocation
-		firstSpawnPoint,
-		hunterSpawnPoint;
-
-	public final Map<Integer, ImmutableLocation>
-		runawayRespawnPoints,
-		jailPoints;
+	private Map<Integer, ImmutableLocation> runawayRespawnPoints;
+	private Map<Integer, ImmutableLocation> jailPoints;
 
 	private final int[] fallImpact;
 
-	private final LockableArrayListLocker<Player>
-		players = LockableArrayList.of(),
-		runaways = LockableArrayList.of(),
-		hunters = LockableArrayList.of(),
-		spectators = LockableArrayList.of(),
-		hunterApplicants = LockableArrayList.of();
+	private final HashMap<Player, Profession> professions = new HashMap<>();
 
-	private final LockableHashMapLocker<Player, Long>
-		dropouts = LockableHashMap.of(),
-		quittedPlayers = LockableHashMap.of(),
-		quittedHunters = LockableHashMap.of();
+	private final LockableArrayListLocker<Player> hunterApplicants = LockableArrayList.of();
+
+	private final LockableHashMapLocker<Player, Long> dropouts = LockableHashMap.of();
+	private final LockableHashMapLocker<Player, Long> quittedPlayers = LockableHashMap.of();
+	private final LockableHashMapLocker<Player, Long> quittedHunters = LockableHashMap.of();
 
 	private int requiredHunters;
 
-	private Timer
-		preparationTimer,
-		gameTimer;
+	private Timer preparationTimer;
+	private Timer gameTimer;
 
 	private final HashMap<Player, StatesDisplayer> displayers = new HashMap<>();
 	private final HashMap<Player, Integer> runawayMoney = new HashMap<>();
 
-	private Game(MapSettingConfig settings){
+	private Game(MapSettings settings){
 		this.settings = settings;
 
 		world = settings.world;
@@ -114,32 +107,49 @@ public class Game {
 		fallImpact = settings.getFallImpact();
 	}
 
+	public void load(MapSettings settings){
+		if(!world.equals(settings.world))
+			new IllegalArgumentException("World must be same ");
+
+		unitPriceOfPrizeMoney = settings.getUnitPriceOfPrizeMoney();
+		respawnCooldownTime = settings.getRespawnCooldownTime() * 1000;
+
+		correctionValueForItemCoolTime = settings.getCorrectionValueForItemCooldownTime();
+		correctionValueForItemStackSize = settings.getCorrectionValueForItemStackSize();
+		applyRejoinPenalty = settings.getApplyRejoinPenalty() * 1000;
+		npcTimeToLive = settings.getNPCTimeToLive();
+
+		firstSpawnPoint = settings.getFirstSpawnPoint();
+		hunterSpawnPoint = settings.getHunterSpawnPoint();
+
+		runawayRespawnPoints = settings.getRunawayRespawnPoints();
+		jailPoints = settings.getJailSpawnPoints();
+
+		fallImpact = settings.getFallImpact();
+	}
+
 	public int getUnitPriceOfPrizeMoney(){
 		return unitPriceOfPrizeMoney;
 	}
 
-	public void setUnitPriceOfPrizeMoney(int unitPriceOfPrizeMoney){
-		this.unitPriceOfPrizeMoney = Math.max(unitPriceOfPrizeMoney, 0);
-	}
-
-	public List<Player> getPlayers(){
-		return players.list;
+	public void setUnitPriceOfPrizeMoney(int money){
+		unitPriceOfPrizeMoney = Math.max(money, 0);
 	}
 
 	public boolean isJoined(Player player){
-		return getPlayers().contains(player);
+		return professions.containsKey(player);
 	}
 
-	public List<Player> getRunaways(){
-		return runaways.list;
+	public Set<Player> getPlayers(){
+		return professions.keySet();
 	}
 
 	public boolean isRunaway(Player player){
-		return getRunaways().contains(player);
+		return matchProfession(player, Profession.RUNAWAY);
 	}
 
 	public boolean isDropout(Player player){
-		return dropouts.map.containsKey(player);
+		return matchProfession(player, Profession.DROPOUT);
 	}
 
 	public boolean canRespawn(Player runaway){
@@ -150,19 +160,27 @@ public class Game {
 	}
 
 	public List<Player> getHunters(){
-		return hunters.list;
+		return getPlayers(Profession.HUNTER);
+	}
+
+	private boolean matchProfession(Player player, Profession profession){
+		return professions.get(player) == profession;
+	}
+
+	private List<Player> getPlayers(Profession profession){
+		List<Player> list = new ArrayList<>();
+		for(Entry<Player, Profession> entry : professions.entrySet())
+			if(profession == entry.getValue())
+				list.add(entry.getKey());
+		return list;
 	}
 
 	public boolean isHunter(Player player){
 		return getHunters().contains(player);
 	}
 
-	public List<Player> getSpectators(){
-		return spectators.list;
-	}
-
 	public boolean isSpectator(Player player){
-		return getSpectators().contains(player);
+		return matchProfession(player, Profession.SPECTATOR);
 	}
 
 	public List<Player> getHunterApplicants(){
@@ -186,7 +204,7 @@ public class Game {
 		if(gameTimer != null)
 			throw new IllegalStateException("The game has already been started");
 
-		broadcastTitle(ChatColor.RED + "逃走中スタート！", "");
+		broadcastTitle(ChatColor.DARK_RED + "逃走中スタート！", "");
 
 		decideHunters();
 		for(Player player : getPlayers()){
@@ -207,7 +225,7 @@ public class Game {
 		if(isJoined(player))
 			return;
 
-		players.bypass((list) -> list.add(player));
+		professions.put(player, Profession.PLAYER);
 
 		displayers.values().forEach(StatesDisplayer::updatePlayerCount);
 
@@ -216,11 +234,10 @@ public class Game {
 		broadcast(player.getName() + "が参加しました。");
 
 		//まだ準備状態であれば戻る
-		if(!preparationTimer.isZero())
+		if(preparationTimer.getCount() > 0)
 			return;
 
 		if(isQuitted(player)){
-			players.bypass((list) -> list.add(player));
 			if(System.currentTimeMillis() - quittedHunters.map.getOrDefault(player, 0L) >= applyRejoinPenalty){
 				quittedHunters.bypass((map) -> map.remove(player));
 				becomeHunter(player);
@@ -236,8 +253,6 @@ public class Game {
 			becomeSpectator(player);
 			message(player, "あなたは観戦者になりました。");
 		}
-
-		player.teleport(firstSpawnPoint.toLocation(world));
 	}
 
 	public void quit(Player player){
@@ -322,21 +337,6 @@ public class Game {
 		return getHunterApplicants().contains(player);
 	}
 
-	//ハンターの募集に応募する
-	public void applyForHunter(Player player){
-		hunterApplicants.bypass((list) -> list.add(player));
-		message(player, "ハンターの募集に応募しました。");
-	}
-
-	public void becomeRunaway(Player player){
-		if(isJoined(player) || isHunter(player) || isRunaway(player) || isSpectator(player))
-			return;
-
-		removeDropout(player);
-
-		runaways.bypass((list) -> list.add(player));
-	}
-
 	public void giveMoneyToRunaways(){
 		for(Player runaway : getPlayers()){
 			int money = runawayMoney.get(runaway) + unitPriceOfPrizeMoney;
@@ -353,8 +353,23 @@ public class Game {
 		return displayers.get(player);
 	}
 
+	//ハンターの募集に応募する
+	public void applyForHunter(Player player){
+		hunterApplicants.bypass((list) -> list.add(player));
+		message(player, "ハンターの募集に応募しました。");
+	}
+
+	public void becomeRunaway(Player player){
+		if(isJoined(player) || isHunter(player) || isRunaway(player) || isSpectator(player))
+			return;
+
+		removeDropout(player);
+
+		runaways.bypass((list) -> list.add(player));
+	}
+
 	public void becomeDropout(Player player){
-		if(!isJoined(player) || isHunter(player) || !isRunaway(player) || isSpectator(player))
+		if(!isJoined(player) || !isRunaway(player))
 			return;
 
 		removeRunaway(player);
@@ -371,7 +386,7 @@ public class Game {
 		becomeRunaway(dropout);
 
 		ArrayList<ImmutableLocation> points = new ArrayList<>(runawayRespawnPoints.values());
-		dropout.teleport(points.get(points.size()).toLocation(settings.world));
+		points.get(points.size()).teleport(dropout);
 	}
 
 	public void becomeHunter(Player player){
@@ -386,7 +401,7 @@ public class Game {
 
 		getDisplayer(player).updateProfession();
 
-		player.teleport(hunterSpawnPoint.toLocation(world));
+		hunterSpawnPoint.teleport(player);
 	}
 
 	public void becomeSpectator(Player player){

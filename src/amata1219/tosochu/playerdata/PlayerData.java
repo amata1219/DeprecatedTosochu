@@ -8,16 +8,26 @@ public class PlayerData {
 
 	//ハンターのなった人の回数情報・生存回数・賞金・アイテム買ったデータ
 
+	//UUID: permission,money,countOfWins,countOfBecameHunter,items...
+
 	public final UUID uuid;
 
 	private Permission permission = Permission.ADMINISTRATOR;
 
 	private int money;
-	private int countOfWins;
-	private int countOfBecameHunter;
+	private int numberOfWins;
+	private int numberOfTimesThatBecameHunter;
 
 	public PlayerData(UUID uuid){
 		this.uuid = uuid;
+	}
+
+	public PlayerData(UUID uuid, Permission permission, int money, int numberOfWins, int numberOfTimesThatBecameHunter){
+		this(uuid);
+		this.permission = permission;
+		this.money = money;
+		this.numberOfWins = numberOfWins;
+		this.numberOfTimesThatBecameHunter = numberOfTimesThatBecameHunter;
 	}
 
 	public Permission getPermission(){
@@ -54,20 +64,20 @@ public class PlayerData {
 		money = Math.max(money - value, 0);
 	}
 
-	public int getCountOfWins(){
-		return countOfWins;
+	public int getNumberOfWins(){
+		return numberOfWins;
 	}
 
-	public void incrementCountOfWins(){
-		countOfWins++;
+	public void incrementNumberOfWins(){
+		numberOfWins++;
 	}
 
-	public int getCountOfBecameHunter(){
-		return countOfBecameHunter;
+	public int getNumberOfTimesThatBecameHunter(){
+		return numberOfTimesThatBecameHunter;
 	}
 
-	public void incrementCountOfBecameHunter(){
-		countOfBecameHunter++;
+	public void incrementNumberOfTimesThatBecameHunter(){
+		numberOfTimesThatBecameHunter++;
 	}
 
 }

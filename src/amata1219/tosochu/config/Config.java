@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -58,6 +61,14 @@ public class Config {
 
 	public double getDouble(String key){
 		return get().getDouble(key);
+	}
+
+	public Map<String, ConfigurationSection> getHierarchies(){
+		Map<String, ConfigurationSection> hierarchies = new HashMap<>();
+		FileConfiguration config = get();
+		for(String key : config.getKeys(false))
+			hierarchies.put(key, config.getConfigurationSection(key));
+		return hierarchies;
 	}
 
 	public void save(){

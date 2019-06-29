@@ -11,11 +11,11 @@ import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.game.Difficulty;
 import amata1219.tosochu.location.ImmutableLocation;
 
-public class MapSettingConfig extends Config {
+public class MapSettings extends Config {
 
 	public final World world;
 
-	public MapSettingConfig(String name) {
+	public MapSettings(String name) {
 		super(name, new File(Tosochu.getPlugin().getMapSettingsFolder(), name));
 		world = Bukkit.getWorld(getName());
 	}
@@ -55,7 +55,7 @@ public class MapSettingConfig extends Config {
 	}
 
 	public int getRespawnCooldownTime(){
-		return Integer.valueOf(getDifficulty().getString(getString("RespawnCooldownTime")).split("@")[0]);
+		return Integer.valueOf(getDifficulty().split(getString("RespawnCooldownTime")).split("@")[0]);
 	}
 
 	public void setRespawnCooldownTime(int respawnCooldownTime){
@@ -67,7 +67,7 @@ public class MapSettingConfig extends Config {
 	}
 
 	public int getSecondaryRespawnCooldownTime(){
-		String[] times = getDifficulty().getString(getString("RespawnCooldownTime")).split("@");
+		String[] times = getDifficulty().split(getString("RespawnCooldownTime")).split("@");
 		return Integer.valueOf(times.length == 1 ? times[0] : times[1]);
 	}
 
@@ -90,7 +90,7 @@ public class MapSettingConfig extends Config {
 	}
 
 	public int getCorrectionValueForItemStackSize(){
-		String value = getDifficulty().getString(getString("CorrectionValueForItemStackSize"));
+		String value = getDifficulty().split(getString("CorrectionValueForItemStackSize"));
 		return Integer.valueOf(value.indexOf("@") == 1 ? value.substring(1) : value);
 	}
 
@@ -101,7 +101,7 @@ public class MapSettingConfig extends Config {
 	}
 
 	public boolean isCorrectionValueToSpecifyItemStackSize(){
-		return getDifficulty().getString(getString("CorrectionValueForItemStackSize")).indexOf("@") == 1;
+		return getDifficulty().split(getString("CorrectionValueForItemStackSize")).indexOf("@") == 1;
 	}
 
 	public int getForceSpectatorTimeThreshold(){

@@ -8,30 +8,45 @@ import amata1219.tosochu.game.Game;
 public abstract class Timer extends BukkitRunnable {
 
 	protected final Game game;
-	private int timeLimit;
-	protected int count;
+	private int limit, count;
 
-	protected Timer(Game game, int timeLimit){
+	protected Timer(Game game, int limit){
 		this.game = game;
-		this.timeLimit = timeLimit;
-		this.count = timeLimit;
+		this.count = this.limit = limit;
 	}
 
-	public boolean isZero(){
-		return count <= 0;
+	@Override
+	public final void run(){
+		if(count <= 0){
+			end();
+			return;
+		}
+
+		//残り時間の表示
+		for(Player player : game.getPlayers())
+			player.setLevel(count);
+
+		execute();
+
+		count--;
+	}
+
+	public abstract void execute();
+
+	public void end(){
+		cancel();
+	}
+
+	public int getLimit(){
+		return limit;
+	}
+
+	public int getCount(){
+		return count;
 	}
 
 	public int getElapsedTime(){
-		return timeLimit - count;
+		return limit - count;
 	}
-
-	public void updateDisplay(){
-		for(Player player : game.getPlayers())
-			player.setLevel(count);
-	}
-
-	public abstract void start();
-
-	public abstract void end();
 
 }

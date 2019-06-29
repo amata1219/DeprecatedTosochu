@@ -9,30 +9,13 @@ public class PreparationTimer extends Timer {
 	}
 
 	@Override
-	public void run() {
-		if(isZero()){
-			end();
-			return;
-		}
-
-		count--;
-		updateDisplay();
-	}
-
-	@Override
-	public void start() {
-		game.broadcast("ゲームの準備を開始しました。");
-		game.recruitHunters(game.settings.getNumberOfFirstRequiredHunters());
-		updateDisplay();
+	public void execute() {
 	}
 
 	@Override
 	public void end(){
-		if(isCancelled())
-			return;
-
+		super.end();
 		game.start();
-		cancel();
 	}
 
 }

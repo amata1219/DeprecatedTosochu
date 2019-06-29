@@ -21,7 +21,7 @@ import amata1219.tosochu.command.EndCommand;
 import amata1219.tosochu.command.StartCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
-import amata1219.tosochu.config.MapSettingConfig;
+import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.Game;
 import amata1219.tosochu.playerdata.PlayerData;
 
@@ -31,27 +31,31 @@ public class Tosochu extends JavaPlugin implements Listener {
 
 	private final HashMap<String, Command> commands = new HashMap<>();
 
-	private final HashMap<UUID, PlayerData> players = new HashMap<>();
+	private PlayerDataStorage playerDataStorage;
 
 	private File mapSettingsFolder;
-	private final HashMap<String, MapSettingConfig> mapSettings = new HashMap<>();
+	private final HashMap<String, MapSettings> mapSettings = new HashMap<>();
 
 	private Config config;
 	private Config messages;
+	private Config playerData;
 
 	@Override
 	public void onEnable(){
 		plugin = this;
 
+		config = new Config("config.yml").create();
+		messages = new Config("messages.yml").create();
+		playerData = new Config("player_data.yml").create();
+
+		//テンプレートファイルを作成する
+		new Config("template.yml").create();
+
 		mapSettingsFolder = new File(getDataFolder() + File.separator + "MapSettings");
 		if(!mapSettingsFolder.exists())
 			mapSettingsFolder.mkdirs();
 
-		config = new Config("config.yml").create();
-		messages = new Config("messages.yml").create();
-
-		//テンプレートファイルを作成する
-		new Config("template.yml").create();
+		playerDataStorage = new PlayerDataStorage();
 
 		registerCommands(
 			new StartCommand(),
@@ -66,19 +70,15 @@ public class Tosochu extends JavaPlugin implements Listener {
 
 		reloadMapSettings();
 
-		for(Player player : getServer().getOnlinePlayers()){
-			UUID uuid = player.getUniqueId();
-			if(!players.containsKey(uuid))
-				players.put(uuid, new PlayerData(uuid));
-		}
-
+		for(Player player : getServer().getOnlinePlayers())
+			tryCreatePlayerData(player.getUniqueId());
 	}
 
 	@Override
 	public void onDisable(){
-		HandlerList.unregisterAll((JavaPlugin) this);
-
 		Game.game = null;
+
+		HandlerList.unregisterAll((JavaPlugin) this);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class Tosochu extends JavaPlugin implements Listener {
 
 		Player player = (Player) sender;
 		Command command = commands.get(input.getName());
-		if(command.hasPermission(player))
+		if(getPlayerData(player.getUniqueId()).hasPermission(command.getPermission()))
 			command.onCommand(player, new Args(args));
 		return true;
 	}
@@ -105,12 +105,12 @@ public class Tosochu extends JavaPlugin implements Listener {
 		mapSettings.clear();
 
 		for(File file : mapSettingsFolder.listFiles()){
-			MapSettingConfig settings = new MapSettingConfig(file.getName());
+			MapSettings settings = new MapSettings(file.getName());
 			mapSettings.put(settings.getName(), settings);
 		}
 	}
 
-	public MapSettingConfig getMapSettings(String worldName){
+	public MapSettings getMapSettings(String worldName){
 		return mapSettings.get(worldName);
 	}
 
@@ -134,13 +134,16 @@ public class Tosochu extends JavaPlugin implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent event){
-		UUID uuid = event.getPlayer().getUniqueId();
-		if(!players.containsKey(uuid))
-			players.put(uuid, new PlayerData(uuid));
+		tryCreatePlayerData(event.getPlayer().getUniqueId());
 	}
 
 	public PlayerData getPlayerData(UUID uuid){
 		return players.get(uuid);
+	}
+
+	private void tryCreatePlayerData(UUID uuid){
+		if(!players.containsKey(uuid))
+			players.put(uuid, new PlayerData(uuid));
 	}
 
 }

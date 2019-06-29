@@ -9,28 +9,13 @@ public class GameTimer extends Timer {
 	}
 
 	@Override
-	public void run() {
-		if(isZero()){
-			end();
-			return;
-		}
-
-		count--;
-
+	public void execute(){
 		game.giveMoneyToRunaways();
-		updateDisplay();
-	}
-
-	@Override
-	public void start() {
 	}
 
 	@Override
 	public void end(){
-		if(isCancelled())
-			return;
-
-		cancel();
+		super.end();
 	}
 
 }

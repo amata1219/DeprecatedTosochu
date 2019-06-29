@@ -3,6 +3,7 @@ package amata1219.tosochu.game.scoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -24,6 +25,8 @@ public class StatesDisplayer {
 		this.game = game;
 		this.player = player;
 
+		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
 		set(0, "難易度: " + game.difficulty.toString());
 		set(1, "");
 		set(2, playerCount = "参加人数: " + game.getPlayers().size());
@@ -34,7 +37,10 @@ public class StatesDisplayer {
 	}
 
 	public void setDisplay(boolean display){
-		player.setScoreboard(display ? board : Bukkit.getScoreboardManager().getNewScoreboard());
+		if(display)
+			player.setScoreboard(board);
+		else
+			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	}
 
 	public void updatePlayerCount(){
