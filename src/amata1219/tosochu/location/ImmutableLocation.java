@@ -1,5 +1,8 @@
 package amata1219.tosochu.location;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
 public class ImmutableLocation {
 
 	public final int x, y, z;
@@ -17,6 +20,10 @@ public class ImmutableLocation {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	public Location toLocation(World world){
+		return new Location(world, x, y, z);
 	}
 
 	@Override

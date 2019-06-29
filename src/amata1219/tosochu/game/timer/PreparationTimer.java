@@ -16,12 +16,14 @@ public class PreparationTimer extends Timer {
 		}
 
 		count--;
+		updateDisplay();
 	}
 
 	@Override
 	public void start() {
 		game.broadcast("ゲームの準備を開始しました。");
 		game.recruitHunters(game.settings.getNumberOfFirstRequiredHunters());
+		updateDisplay();
 	}
 
 	@Override

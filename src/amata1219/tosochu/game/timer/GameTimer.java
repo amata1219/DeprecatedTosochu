@@ -14,6 +14,11 @@ public class GameTimer extends Timer {
 			end();
 			return;
 		}
+
+		count--;
+
+		game.giveMoneyToRunaways();
+		updateDisplay();
 	}
 
 	@Override

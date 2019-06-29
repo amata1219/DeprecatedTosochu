@@ -1,5 +1,6 @@
 package amata1219.tosochu.game.timer;
 
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import amata1219.tosochu.game.Game;
@@ -22,6 +23,11 @@ public abstract class Timer extends BukkitRunnable {
 
 	public int getElapsedTime(){
 		return timeLimit - count;
+	}
+
+	public void updateDisplay(){
+		for(Player player : game.getPlayers())
+			player.setLevel(count);
 	}
 
 	public abstract void start();

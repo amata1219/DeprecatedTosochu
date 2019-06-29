@@ -13,12 +13,11 @@ import amata1219.tosochu.location.ImmutableLocation;
 
 public class MapSettingConfig extends Config {
 
+	public final World world;
+
 	public MapSettingConfig(String name) {
 		super(name, new File(Tosochu.getPlugin().getMapSettingsFolder(), name));
-	}
-
-	public World getMap(){
-		return Bukkit.getWorld(getName());
+		world = Bukkit.getWorld(getName());
 	}
 
 	public int getPreparationTime(){
