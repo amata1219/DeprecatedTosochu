@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import amata1219.tosochu.MapSettingsStorage;
 import amata1219.tosochu.Tosochu;
-import amata1219.tosochu.config.MapSettings;
+import amata1219.tosochu.location.ImmutableLocation;
 import amata1219.tosochu.playerdata.Permission;
 
 public class MapMoveCommand implements Command {
@@ -42,9 +42,9 @@ public class MapMoveCommand implements Command {
 		World from = sender.getWorld();
 
 		//全プレイヤーを初期スポーン地点にテレポートさせる
-		MapSettings settings = storage.get(worldName);
+		ImmutableLocation location = storage.get(worldName).getFirstSpawnLocation();
 		for(Player player : Bukkit.getOnlinePlayers())
-			settings.getFirstSpawnPoint().teleport(player);
+			location.teleport(player);
 
 		info(sender, "指定されたマップ(" + worldName + ")をロードしました。");
 

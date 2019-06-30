@@ -3,10 +3,12 @@ package amata1219.tosochu.command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.playerdata.Permission;
 
 public class GameEndCommand implements Command {
+
+	private final Tosochu plugin = Tosochu.getPlugin();
 
 	@Override
 	public String getName() {
@@ -20,12 +22,12 @@ public class GameEndCommand implements Command {
 
 	@Override
 	public void onCommand(Player sender, Args args) {
-		if(!Game.isInGame()){
+		if(!plugin.isInGame()){
 			sender.sendMessage(ChatColor.RED + "現在ゲームが行われていないため実行出来ません。");
 			return;
 		}
 
-		Game.game.end();
+		plugin.game.end();
 		sender.sendMessage(ChatColor.AQUA + "ゲームを強制終了しました。");
 	}
 

@@ -1,13 +1,15 @@
 package amata1219.tosochu.config;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
-import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.game.Difficulty;
 import amata1219.tosochu.location.ImmutableLocation;
 
@@ -108,65 +110,71 @@ public class MapSettings extends Config {
 		set("Time to live of NPC", time);
 	}
 
-	public ImmutableLocation getFirstSpawnPoint(){
-		return ImmutableLocation.at(getString("Point.FirstSpawn"));
+	public ImmutableLocation getFirstSpawnLocation(){
+		return ImmutableLocation.at(world, getString("First spawn location"));
 	}
 
-	public void setFirstSpawnPoint(int x, int y, int z){
-		set("Point.FirstSpawn", x + "," + y + "," + z);
+	public void setFirstSpawnLocation(int x, int y, int z){
+		set("First spawn location", x + "," + y + "," + z);
 	}
 
-	public ImmutableLocation getHunterSpawnPoint(){
-		return ImmutableLocation.at(getString("Point.HunterSpawn"));
+	public ImmutableLocation getHunterSpawnLocation(){
+		return ImmutableLocation.at(world, getString("Hunter spawn location"));
 	}
 
-	public void setHunterSpawnPoint(int x, int y, int z){
-		set("Point.HunterSpawn", x + "," + y + "," + z);
+	public void setHunterSpawnLocation(int x, int y, int z){
+		set("Hunter spawn location", x + "," + y + "," + z);
 	}
 
-	public HashMap<Integer, ImmutableLocation> getRunawayRespawnPoints(){
-		HashMap<Integer, ImmutableLocation> points = new HashMap<>();
-		if(get().isConfigurationSection("Point.RunawayRespawn"))
-			return points;
-
-		for(String key : get().getConfigurationSection("Point.RunawayRespawn").getKeys(false))
-			points.put(Integer.valueOf(key), ImmutableLocation.at(getString("Point.RunawayRespawn." + key)));
-
-		return points;
+	public List<ImmutableLocation> getRunawayRespawnLocations(){
+		ConfigurationSection section = get().getConfigurationSection("Runaway respawn locations");
+		return section.getKeys(false)
+				.stream()
+				.map(key -> section.getString(key))
+				.map(xyz -> ImmutableLocation.at(world, xyz))
+				.collect(Collectors.toList());
 	}
 
-	public void setRunawayRespawnPoints(HashMap<Integer, ImmutableLocation> points){
-		set("Point.RunawayRespawn", null);
-
-		for(Entry<Integer, ImmutableLocation> entry : points.entrySet())
-			set("Point.RunawayRespawn." + entry.getKey(), entry.getValue().toString());
+	public void addRunawayRespawnLocation(int key, ImmutableLocation location){
+		set("Runaway respawn locations." + key, location.toString());
 	}
 
-	public HashMap<Integer, ImmutableLocation> getJailSpawnPoints(){
-		HashMap<Integer, ImmutableLocation> points = new HashMap<>();
-		if(get().isConfigurationSection("Point.JailSpawn"))
-			return points;
-
-		for(String key : get().getConfigurationSection("Point.JailSpawn").getKeys(false))
-			points.put(Integer.valueOf(key), ImmutableLocation.at(world, getString("Point.JailSpawn." + key)));
-
-		return points;
+	public void removeRunawayRespawnLocation(int key){
+		remove("Runaway respawn locations." + key);
 	}
 
-	public void setJailSpawnPoints(HashMap<Integer, ImmutableLocation> points){
-		set("Point.JailSpawn", null);
+	public void setRunawayRespawnLocations(Map<Integer, ImmutableLocation> locations){
+		for(Entry<Integer, ImmutableLocation> entry : locations.entrySet())
+			set("Runaway respawn locations." + entry.getKey(), entry.getValue().toString());
+	}
 
-		for(Entry<Integer, ImmutableLocation> entry : points.entrySet())
-			set("Point.JailSpawn." + entry.getKey(), entry.getValue().toString());
+	public List<ImmutableLocation> getJailSpawnLocations(){
+		ConfigurationSection section = get().getConfigurationSection("Jail spawn locations");
+		return section.getKeys(false)
+				.stream()
+				.map(key -> section.getString(key))
+				.map(xyz -> ImmutableLocation.at(world, xyz))
+				.collect(Collectors.toList());
+	}
+
+	public void addJailSpawnLocation(int key, ImmutableLocation location){
+		set("Jail spawn locations." + key, location.toString());
+	}
+
+	public void removeJailSpawnLocation(int key){
+		remove("Jail spawn locations." + key);
+	}
+
+	public void setJailSpawnLocations(Map<Integer, ImmutableLocation> locations){
+		for(Entry<Integer, ImmutableLocation> entry : locations.entrySet())
+			set("Jail spawn locations." + entry.getKey(), entry.getValue().toString());
 	}
 
 	public int[] getFallImpact(){
 		int[] levels = new int[256];
-		if(get().isConfigurationSection("Runaway.FallImpact"))
-			return levels;
-
-		for(String key : get().getConfigurationSection("Runaway.FallImpact").getKeys(false))
-			levels[Integer.valueOf(key) - 1] = getInt("Runaway.FallImpact." + key);
+		ConfigurationSection section = get().getConfigurationSection("Fall impact");
+		for(String key : section.getKeys(false))
+			levels[Integer.valueOf(key) - 1] = section.getInt(key);
 
 		int tmp = levels[0];
 		for(int i = 1; i < levels.length; i++){
@@ -181,19 +189,27 @@ public class MapSettings extends Config {
 	}
 
 	public int getNumberOfFirstRequiredHunters(){
-		return getInt("Hunter.NumberOfFirstRequiredHunters");
+		return getInt("Number of first required hunters");
 	}
 
 	public void setNumberOfFirstRequiredHunters(int hunters){
-		set("NumberOfFirstRequiredHunters", hunters);
+		set("Number of first required hunters", hunters);
 	}
 
 	public int getHunterSpeedLevel(){
-		return getInt("Hunter.SpeedLevel");
+		return getInt("Level of speed effect that gave to hunter");
 	}
 
 	public void setHunterSpeedLevel(int level){
-		set("Hunter.SpeedLevel", level);
+		set("Level of speed effect that gave to hunter", level);
+	}
+
+	public boolean isAlwaysDisplayScoreboard(){
+		return !getBoolean("Always display scoreboard");
+	}
+
+	public void setAlwaysDisplayScoreboard(boolean always){
+		set("Always display scoreboard", always);
 	}
 
 	private String getString(String key){
@@ -204,17 +220,21 @@ public class MapSettings extends Config {
 		return difficulty.split(getString(key));
 	}
 
-	private int getInt(String key){
-		return get().getInt(key);
+	private boolean getBoolean(String key){
+		return get().getBoolean(key);
 	}
 
-	private double getDouble(String key){
-		return get().getDouble(key);
+	private int getInt(String key){
+		return get().getInt(key);
 	}
 
 	private void set(String key, Object value){
 		get().set(key, value);
 		update();
+	}
+
+	private void remove(String key){
+		set(key, null);
 	}
 
 }

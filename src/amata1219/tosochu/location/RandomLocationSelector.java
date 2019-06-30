@@ -1,14 +1,14 @@
 package amata1219.tosochu.location;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class RandomLocationSelector {
 
 	private final Random random = new Random();
-	private final ArrayList<ImmutableLocation> locations;
+	private final List<ImmutableLocation> locations;
 
-	public RandomLocationSelector(ArrayList<ImmutableLocation> locations){
+	public RandomLocationSelector(List<ImmutableLocation> locations){
 		if(locations.isEmpty())
 			new IllegalArgumentException("Locations can not be empty");
 

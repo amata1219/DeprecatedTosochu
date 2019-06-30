@@ -1,10 +1,13 @@
 package amata1219.tosochu;
 
+import java.util.UUID;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -18,15 +21,26 @@ import org.bukkit.inventory.ItemStack;
 
 import amata1219.tosochu.game.Game;
 import amata1219.tosochu.game.scoreboard.StatesDisplayer;
+import amata1219.tosochu.playerdata.PlayerData;
 
 public class GameListener implements Listener {
+
+	private final Tosochu plugin = Tosochu.getPlugin();
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onFirstJoin(PlayerJoinEvent event){
+		PlayerDataStorage storage = plugin.getPlayerDataStorage();
+		UUID uuid = event.getPlayer().getUniqueId();
+		if(!storage.isExist(uuid))
+			storage.add(new PlayerData(uuid));
+	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event){
 		if(!shouldRun(null))
 			return;
 
-		Game.game.join(event.getPlayer());
+		getGame().join(event.getPlayer());
 	}
 
 	@EventHandler
@@ -36,7 +50,7 @@ public class GameListener implements Listener {
 		if(!shouldRun(player))
 			return;
 
-		Game.game.quit(player);
+		getGame().quit(player);
 	}
 
 	@EventHandler
@@ -53,7 +67,7 @@ public class GameListener implements Listener {
 		if(block.getType() != Material.STONE_PLATE)
 			return;
 
-		Game.game.respawn(player);
+		getGame().respawn(player);
 	}
 
 	@EventHandler
@@ -68,15 +82,14 @@ public class GameListener implements Listener {
 		if(!isPlayer(entity) || !isPlayer(damager))
 			return;
 
-		Game game = Game.game;
 		Player hunter = (Player) entity;
 		Player runaway = (Player) damager;
-		if(!game.isHunter(hunter) || !game.isRunaway(runaway))
+		if(!getGame().isHunter(hunter) || !getGame().isRunaway(runaway))
 			return;
 
-		game.becomeDropout(runaway);
+		getGame().becomeDropout(runaway);
 
-		game.broadcast(runaway.getName() + "が確保されました");
+		getGame().broadcast(runaway.getName() + "が確保されました");
 	}
 
 	@EventHandler
@@ -91,27 +104,30 @@ public class GameListener implements Listener {
 		if(event.getCause() != DamageCause.FALL)
 			return;
 
-		Game game = Game.game;
 		Player runaway = (Player) entity;
-		if(game.isRunaway(runaway))
-			game.fall(runaway);
+		if(getGame().isRunaway(runaway))
+			getGame().fall(runaway);
 	}
 
 	@EventHandler
 	public void onHeld(PlayerItemHeldEvent event){
 		Player player = event.getPlayer();
-		if(!shouldRun(player))
+		if(!shouldRun(player) || getGame().settings.isAlwaysDisplayScoreboard())
 			return;
 
 		Inventory inventory = player.getInventory();
 		ItemStack item = inventory.getItem(event.getNewSlot());
-		StatesDisplayer displayer = Game.game.getDisplayer(player);
+		StatesDisplayer displayer = getGame().getDisplayer(player);
 		if(displayer != null)
 			displayer.setDisplay(item == null ? false : item.getType() == Material.BOOK);
 	}
 
+	private Game getGame(){
+		return plugin.game;
+	}
+
 	private boolean shouldRun(Entity entity){
-		return Game.isInGame() && (entity == null || Game.game.world.equals(entity.getWorld()));
+		return plugin.isInGame() && (entity == null || getGame().world.equals(entity.getWorld()));
 	}
 
 	private boolean isPlayer(Entity entity){

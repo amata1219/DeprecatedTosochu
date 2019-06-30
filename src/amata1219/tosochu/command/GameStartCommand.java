@@ -11,6 +11,8 @@ import amata1219.tosochu.playerdata.Permission;
 
 public class GameStartCommand implements GameCommand {
 
+	private final Tosochu plugin = Tosochu.getPlugin();
+
 	@Override
 	public String getName() {
 		return "start";
@@ -23,7 +25,7 @@ public class GameStartCommand implements GameCommand {
 
 	@Override
 	public void execute(Player sender, Args args) {
-		if(Game.isInGame()){
+		if(plugin.isInGame()){
 			sender.sendMessage(ChatColor.RED + "現在ゲームが行われているため実行出来ません。");
 			return;
 		}
@@ -34,10 +36,10 @@ public class GameStartCommand implements GameCommand {
 			return;
 		}
 
-		Game.loadGame(settings).prepare();
+		Game game = plugin.game = new Game(settings);
+		game.prepare();
 		sender.sendMessage(ChatColor.AQUA + "ゲームの準備を開始しました。");
 
-		Game game = Game.game;
 		for(Player player : Bukkit.getOnlinePlayers()){
 			game.join(player);
 		}

@@ -1,6 +1,7 @@
 package amata1219.tosochu;
 
 import java.util.HashMap;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -11,13 +12,18 @@ import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
 import amata1219.tosochu.command.GameEndCommand;
 import amata1219.tosochu.command.GameStartCommand;
+import amata1219.tosochu.command.MapLoadCommand;
+import amata1219.tosochu.command.MapUnloadCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
 import amata1219.tosochu.game.Game;
+import amata1219.tosochu.playerdata.PlayerData;
 
 public class Tosochu extends JavaPlugin {
 
 	private static Tosochu plugin;
+
+	public Game game;
 
 	private final HashMap<String, Command> commands = new HashMap<>();
 
@@ -47,21 +53,26 @@ public class Tosochu extends JavaPlugin {
 		registerCommands(
 			new GameStartCommand(),
 			new GameEndCommand(),
-			new WorldTeleportCommand()
+			new WorldTeleportCommand(),
+			new MapLoadCommand(),
+			new MapUnloadCommand()
 		);
 
 		registerListeners(
 			new GameListener()
 		);
 
-		//for(Player player : getServer().getOnlinePlayers())
+		for(Player player : getServer().getOnlinePlayers()){
+			if(playerDataStorage.isExist(player))
+				playerDataStorage.add(new PlayerData(player.getUniqueId()));
+		}
 	}
 
 	@Override
 	public void onDisable(){
-		Game.game = null;
-
 		HandlerList.unregisterAll((JavaPlugin) this);
+
+		playerDataStorage.saveAll();
 	}
 
 	@Override
@@ -80,6 +91,10 @@ public class Tosochu extends JavaPlugin {
 
 	public static Tosochu getPlugin(){
 		return plugin;
+	}
+
+	public boolean isInGame(){
+		return game != null;
 	}
 
 	public MapSettingsStorage getMapSettingsStorage(){

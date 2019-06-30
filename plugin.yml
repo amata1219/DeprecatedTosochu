@@ -5,5 +5,10 @@ author: amata1219(Twitter@amata1219)
 
 commands:
   start:
-  g_end:
+    aliases: g_start
+  end:
+    aliases: g_end
   worldtp:
+  mapload:
+  mapunload:
+  mapmove:

@@ -27,7 +27,7 @@ public class StatesDisplayer {
 
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-		set(0, "難易度: " + game.difficulty.toString());
+		set(0, "難易度: " + game.settings.difficulty);
 		set(1, "");
 		set(2, playerCount = "参加人数: " + game.getPlayers().size());
 		set(3, "");

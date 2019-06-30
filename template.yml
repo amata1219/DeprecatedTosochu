@@ -35,14 +35,14 @@ Dfficulty: EASY
 #ハンターのスポーン地点: x,y,z
 
 'Runaway respawn locations':
-  - "0,64,0"
-  - "0,64,0"
+  1: "0,64,0"
+  2: "0,64,0"
 #逃走者の復活地点:
 #  - x,y,z
 
 'Jail spawn locations':
-  - "0,64,0"
-  - "0,64,0"
+  1: "0,64,0"
+  2: "0,64,0"
 #牢獄のスポーン地点:
 #  - x,y,z
 
@@ -60,3 +60,5 @@ Dfficulty: EASY
 'Level of speed effect that gave to hunter': 2
 #ハンターに付与される移動速度上昇のレベル
 
+'Always display scoreboard': true
+#常時スコアボードを表示するかどうか(true=常時表示、false=本を持った時だけ)

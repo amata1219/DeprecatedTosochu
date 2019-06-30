@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.config.Config;
@@ -23,8 +24,8 @@ public class PlayerDataStorage {
 									UUID.fromString(hierarchy.getKey()),
 									Permission.valueOf(section.getString("Permission")),
 									section.getInt("Money"),
-									section.getInt("NumberOfWins"),
-									section.getInt("NumberOfTimesThatBecameHunter")
+									section.getInt("Number of wins"),
+									section.getInt("Number of times became hunter")
 								);
 			add(data);
 		}
@@ -43,6 +44,27 @@ public class PlayerDataStorage {
 			new IllegalArgumentException("The data already exists");
 		else
 			storage.put(data.uuid, data);
+	}
+
+	public boolean isExist(Player player){
+		return isExist(player);
+	}
+
+	public boolean isExist(UUID uuid){
+		return storage.containsKey(uuid);
+	}
+
+	public void saveAll(){
+		FileConfiguration file = config.get();
+		for(Entry<UUID, PlayerData> entry : storage.entrySet()){
+			String uuid = entry.getKey().toString();
+			PlayerData data = entry.getValue();
+			file.set(uuid + ".Permission", data.getPermission().toString());
+			file.set(uuid + ".Money", data.getMoney());
+			file.set(uuid + ".Number of wins", data.getNumberOfWins());
+			file.set(uuid + ".Number of times became hunter", data.getNumberOfTimesThatBecameHunter());
+		}
+		config.update();
 	}
 
 }
