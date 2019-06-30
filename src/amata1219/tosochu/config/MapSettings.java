@@ -13,31 +13,31 @@ import amata1219.tosochu.location.ImmutableLocation;
 
 public class MapSettings extends Config {
 
+	//このマップに対応するワールド
 	public final World world;
+	public final Difficulty difficulty;
 
-	public MapSettings(String name) {
-		super(name, new File(Tosochu.getPlugin().getMapSettingsFolder(), name));
+	public MapSettings(File file){
+		super(file);
+
 		world = Bukkit.getWorld(getName());
+		difficulty = Difficulty.valueOf(getString("Dfficulty").toUpperCase());
 	}
 
 	public int getPreparationTime(){
-		return getInt("PreparationTime");
+		return getInt("Preparation time");
 	}
 
-	public void setPreparationTime(int preparationTime){
-		set("PreparationTime", preparationTime);
+	public void setPreparationTime(int time){
+		set("Preparation time", time);
 	}
 
 	public int getTimeLimit(){
-		return getInt("TimeLimit");
+		return getInt("Time limit");
 	}
 
-	public void setTimeLimit(int timeLimit){
-		set("TimeLimit", timeLimit);
-	}
-
-	public Difficulty getDifficulty(){
-		return Difficulty.valueOf(getString("Dfficulty").toUpperCase());
+	public void setTimeLimit(int limit){
+		set("Time limit", limit);
 	}
 
 	public void setDifficulty(Difficulty difficulty){
@@ -45,87 +45,67 @@ public class MapSettings extends Config {
 	}
 
 	public int getUnitPriceOfPrizeMoney(){
-		return getDifficulty().getInteger(getString("UnitPriceOfPrizeMoney"));
+		return Integer.valueOf(getPart("Unit price of prize money"));
 	}
 
-	public void setUnitPriceOfPrizeMoney(int unitPriceOfPrizeMoney){
-		String[] values = getString("UnitPriceOfPrizeMoney").split(",");
-		values[getDifficulty().ordinal()] = String.valueOf(unitPriceOfPrizeMoney);
-		set("UnitPriceOfPrizeMoney", String.join(",", values));
+	public void setUnitPriceOfPrizeMoney(int money){
+		String[] values = getString("Unit price of prize money").split(",");
+		values[difficulty.ordinal()] = String.valueOf(money);
+		set("Unit price of prize money", String.join(",", values));
 	}
 
 	public int getRespawnCooldownTime(){
-		return Integer.valueOf(getDifficulty().split(getString("RespawnCooldownTime")).split("@")[0]);
+		return Integer.valueOf(getPart("Respawn cooldown time"));
 	}
 
-	public void setRespawnCooldownTime(int respawnCooldownTime){
-		String[] values = getString("RespawnCooldownTime").split(",");
-		int ordinal = getDifficulty().ordinal();
-		String[] times = values[ordinal].split("@");
-		values[ordinal] = times.length == 1 ? String.valueOf(respawnCooldownTime) : respawnCooldownTime + "@" + times[1];
-		set("RespawnCooldownTime", String.join(",", values));
+	public void setRespawnCooldownTime(int time){
+		String[] values = getString("Respawn cooldown time").split(",");
+		values[difficulty.ordinal()] = String.valueOf(time);
+		set("Respawn cooldown time", String.join(",", values));
 	}
 
-	public int getSecondaryRespawnCooldownTime(){
-		String[] times = getDifficulty().split(getString("RespawnCooldownTime")).split("@");
-		return Integer.valueOf(times.length == 1 ? times[0] : times[1]);
+	public double getCorrectionValueForCooldownTimeOfItem(){
+		return Double.valueOf(getPart("Correction value for cooldown time of item"));
 	}
 
-	public void setSecondaryRespawnCooldownTime(int secondaryRespawnCooldownTime){
-		String[] values = getString("RespawnCooldownTime").split(",");
-		int ordinal = getDifficulty().ordinal();
-		String[] times = values[ordinal].split("@");
-		values[ordinal] = times[0] + "@" + secondaryRespawnCooldownTime;
-		set("RespawnCooldownTime", String.join(",", values));
+	public void setCorrectionValueForCooldownTimeOfItem(int value){
+		String[] values = getString("Correction value for cooldown time of item").split(",");
+		values[difficulty.ordinal()] = String.valueOf(value);
+		set("Correction value for cooldown time of item", String.join(",", values));
 	}
 
-	public double getCorrectionValueForItemCooldownTime(){
-		return getDifficulty().getDouble(getString("CorrectionValueForItemCoolTime"));
+	public int getCorrectionValueForAmountOfItems(){
+		return Integer.valueOf(getPart("Correction value for amount of items"));
 	}
 
-	public void setCorrectionValueForItemCooldownTime(int correctionValueForItemCooldownTime){
-		String[] values = getString("CorrectionValueForItemCoolTime").split(",");
-		values[getDifficulty().ordinal()] = String.valueOf(correctionValueForItemCooldownTime);
-		set("CorrectionValueForItemCoolTime", String.join(",", values));
+	public void setCorrectionValueForAmountOfItems(int value){
+		String[] values = getString("Correction value for amount of items").split(",");
+		values[difficulty.ordinal()] = String.valueOf(value);
+		set("Correction value for amount of items", String.join(",", values));
 	}
 
-	public int getCorrectionValueForItemStackSize(){
-		String value = getDifficulty().split(getString("CorrectionValueForItemStackSize"));
-		return Integer.valueOf(value.indexOf("@") == 1 ? value.substring(1) : value);
+	public int getWhenRestrictParticipation(){
+		return getInt("When restrict participation");
 	}
 
-	public void setCorrectionValueForItemStackSize(int correctionValueForItemStackSize, boolean specifyItemStackSize){
-		String[] values = getString("CorrectionValueForItemStackSize").split(",");
-		values[getDifficulty().ordinal()] = (specifyItemStackSize ? "@" : "") + correctionValueForItemStackSize;
-		set("CorrectionValueForItemStackSize", String.join(",", values));
+	public void setWhenRestrictParticipation(int when){
+		set("When restrict participation", when);
 	}
 
-	public boolean isCorrectionValueToSpecifyItemStackSize(){
-		return getDifficulty().split(getString("CorrectionValueForItemStackSize")).indexOf("@") == 1;
+	public int getWhenApplyRejoinPenalty(){
+		return getInt("When apply rejoin penalty");
 	}
 
-	public int getForceSpectatorTimeThreshold(){
-		return getInt("ForceSpectatorTimeThreshold");
+	public void setWhenApplyRejoinPenalty(int when){
+		set("When apply rejoin penalty", when);
 	}
 
-	public void setForceSpectatorTimeThreshold(int forceSpectatorTimeThreshold){
-		set("ForceSpectatorTimeThreshold", forceSpectatorTimeThreshold);
+	public int getTimeToLiveOfNPC(){
+		return getInt("Time to live of NPC");
 	}
 
-	public int getApplyRejoinPenalty(){
-		return getInt("ApplyRejoinPenalty");
-	}
-
-	public void setApplyRejoinPenalty(int applyRejoinPenalty){
-		set("ApplyRejoinPenalty", applyRejoinPenalty);
-	}
-
-	public int getNPCTimeToLive(){
-		return getInt("NPCTimeToLive");
-	}
-
-	public void setNPCTimeToLive(int npcTimeToLive){
-		set("NPCTimeToLive", npcTimeToLive);
+	public void setTimeToLiveOfNPC(int time){
+		set("Time to live of NPC", time);
 	}
 
 	public ImmutableLocation getFirstSpawnPoint(){
@@ -168,7 +148,7 @@ public class MapSettings extends Config {
 			return points;
 
 		for(String key : get().getConfigurationSection("Point.JailSpawn").getKeys(false))
-			points.put(Integer.valueOf(key), ImmutableLocation.at(getString("Point.JailSpawn." + key)));
+			points.put(Integer.valueOf(key), ImmutableLocation.at(world, getString("Point.JailSpawn." + key)));
 
 		return points;
 	}
@@ -214,6 +194,22 @@ public class MapSettings extends Config {
 
 	public void setHunterSpeedLevel(int level){
 		set("Hunter.SpeedLevel", level);
+	}
+
+	private String getString(String key){
+		return get().getString(key);
+	}
+
+	private String getPart(String key){
+		return difficulty.split(getString(key));
+	}
+
+	private int getInt(String key){
+		return get().getInt(key);
+	}
+
+	private double getDouble(String key){
+		return get().getDouble(key);
 	}
 
 	private void set(String key, Object value){

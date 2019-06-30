@@ -26,6 +26,7 @@ import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
 import amata1219.tosochu.location.ImmutableLocation;
+import amata1219.tosochu.location.RandomLocationSelector;
 
 public class Game {
 
@@ -46,65 +47,62 @@ public class Game {
 		game = null;
 	}
 
-	private final String prefix = "§7[§4逃走中§7]§r";
+	private Timer preparationTimer;
+	private Timer gameTimer;
 
-	public MapSettings settings;
-
+	//このゲームが行われているワールド
 	public final World world;
-	public final Difficulty difficulty;
 
+	//ゲームの難易度
+	private Difficulty difficulty;
+
+	//賞金単価
 	private int unitPriceOfPrizeMoney;
+
+	//脱落してから復活出来るまでのクールダウンタイム
 	private int respawnCooldownTime;
-	private double correctionValueForItemCoolTime;
+
+	//
+	private double correctionValueForItemCooldownTime;
 	private int correctionValueForItemStackSize;
+
+	//最終ログアウトから何秒経過すると強制的に逃走者にされるか
 	private int applyRejoinPenalty;
 	private int npcTimeToLive;
 
 	private ImmutableLocation firstSpawnPoint;
 	private ImmutableLocation hunterSpawnPoint;
 
-	private Map<Integer, ImmutableLocation> runawayRespawnPoints;
-	private Map<Integer, ImmutableLocation> jailPoints;
+	private RandomLocationSelector runawayRespawnLocations;
+	private RandomLocationSelector jailLocations;
 
-	private final int[] fallImpact;
+	//落下時に付与する移動速度低下のエフェクト効果のレベル
+	//配列長は256なので落下距離を添え字にするだけで取得出来る
+	private int[] fallImpact;
 
 	private final HashMap<Player, Profession> professions = new HashMap<>();
 
-	private final LockableArrayListLocker<Player> hunterApplicants = LockableArrayList.of();
-
-	private final LockableHashMapLocker<Player, Long> dropouts = LockableHashMap.of();
-	private final LockableHashMapLocker<Player, Long> quittedPlayers = LockableHashMap.of();
-	private final LockableHashMapLocker<Player, Long> quittedHunters = LockableHashMap.of();
-
+	//要求しているハンター数
 	private int requiredHunters;
 
-	private Timer preparationTimer;
-	private Timer gameTimer;
+	//ハンターの募集に応募したプレイヤー
+	private final ArrayList<Player> applicants = new ArrayList<>();
+
+	//脱落者と確保された時刻(ミリ秒)
+	private final HashMap<Player, Long> dropouts = new HashMap<>();
+
+	//ログアウトしたプレイヤーとその時刻(ミリ秒)
+	private final HashMap<Player, Long> quittedPlayers = new HashMap<>();
+
+	//ログアウトしたハンター
+	private final ArrayList<Player> quittedHunters = new ArrayList<>();
 
 	private final HashMap<Player, StatesDisplayer> displayers = new HashMap<>();
 	private final HashMap<Player, Integer> runawayMoney = new HashMap<>();
 
 	private Game(MapSettings settings){
-		this.settings = settings;
-
 		world = settings.world;
-		difficulty = settings.getDifficulty();
-
-		unitPriceOfPrizeMoney = settings.getUnitPriceOfPrizeMoney();
-		respawnCooldownTime = settings.getRespawnCooldownTime() * 1000;
-
-		correctionValueForItemCoolTime = settings.getCorrectionValueForItemCooldownTime();
-		correctionValueForItemStackSize = settings.getCorrectionValueForItemStackSize();
-		applyRejoinPenalty = settings.getApplyRejoinPenalty() * 1000;
-		npcTimeToLive = settings.getNPCTimeToLive();
-
-		firstSpawnPoint = settings.getFirstSpawnPoint();
-		hunterSpawnPoint = settings.getHunterSpawnPoint();
-
-		runawayRespawnPoints = settings.getRunawayRespawnPoints();
-		jailPoints = settings.getJailSpawnPoints();
-
-		fallImpact = settings.getFallImpact();
+		load(settings);
 	}
 
 	public void load(MapSettings settings){

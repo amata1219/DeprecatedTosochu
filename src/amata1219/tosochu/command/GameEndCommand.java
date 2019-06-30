@@ -6,11 +6,11 @@ import org.bukkit.entity.Player;
 import amata1219.tosochu.game.Game;
 import amata1219.tosochu.playerdata.Permission;
 
-public class EndCommand implements Command {
+public class GameEndCommand implements Command {
 
 	@Override
 	public String getName() {
-		return "g_end";
+		return "end";
 	}
 
 	@Override

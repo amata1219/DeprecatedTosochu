@@ -1,69 +1,62 @@
-PreparationTime: 30
+'Preparation time': 30
 #準備時間: 秒数
 
-TimeLimit: 1800
+'Time limit': 1800
 #制限時間: 秒数
 
-Dfficulty: Easy
-#難易度: Easy,Normal,Hard,Hardcore
+Dfficulty: EASY
+#難易度: EASY,NORMAL,HARD,HARDCORE
 
-UnitPriceOfPrizeMoney: "50,100,150,200"
-#賞金単価: 各難易度の金額(Easy,Normal,Hard,Hardcore)
+'Unit price of prize money': "50,100,150,200"
+#賞金単価: 各難易度の金額(E,N,H,HC)
 
-RespawnCooldownTime: "0,60,120@30,300"
-#リスポーンのクールタイム: 各難易度のクールタイム(Easy,Normal,Hard,Hardcore)
-#+で2回目以降のクールタイムに加算する値を設定出来る
+'Respawn cooldown time': "0,60,120,300"
+#リスポーンのクールタイム: 各難易度のクールタイム(E,N,H,HC)
 
-CorrectionValueForItemCoolTime: "0,1,1.5,2"
-#アイテムのクールタイムに乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
+'Correction value for cooldown time of item': "0,1,1.5,2"
+#アイテムのクールタイムに乗算する補正値: 各難易度の補正値(E,N,H,HC)
 
-CorrectionValueForItemStackSize: "2,1,0.5,@2"
-#アイテムの配布数に乗算する補正値: 各難易度の補正値(Easy,Normal,Hard,Hardcore)
-#@を付けた場合はそれが個数になる
+'Correction value for amount of items': "2,1,0.5,1"
+#アイテムの配布個数に乗算する補正値: 各難易度の補正値(E,N,H,HC)
 
-ForceSpectatorTimeThreshold: 120
+'When restrict participation': 120
+#いつから参加時に強制的に観戦者にするか: 経過秒数
 
-ApplyRejoinPenalty: 30
-#リログインペナルティを課し始めるログアウト時間: 秒数
+'When apply rejoin penalty': 30
+#リログインペナルティを課し始めるログアウト時間: 経過秒数
 
-NPCTimeToLive: 20
+'Time to live of NPC': 20
 #NPCの生存可能時間: 秒数
 
-Point:
-  FirstSpawn: 0,0,0
-  #ゲーム参加時のスポーン地点: x,y,z
+'First spawn location': "0,64,0"
+#初期スポーン地点: x,y,z
 
-  HunterSpawn: 0,0,0
-  #ハンターのスポーン地点: x,y,z
+'Hunter spawn location': "0,64,0"
+#ハンターのスポーン地点: x,y,z
 
-  RunawayRespawn:
-  #逃走者のリスポーン地点
-    0: 0,0,0
-    1: 0,0,0
-    #地点名: x,y,z
+'Runaway respawn locations':
+  - "0,64,0"
+  - "0,64,0"
+#逃走者の復活地点:
+#  - x,y,z
 
-  JailSpawn:
-  #確保された逃走者のスポーン地点
-    0: 0,0,0
-    1: 0,0,0
-    #地点名: x,y,z
+'Jail spawn locations':
+  - "0,64,0"
+  - "0,64,0"
+#牢獄のスポーン地点:
+#  - x,y,z
 
-Runaway:
-#逃走者の設定
+'Fall impact':
+  6: 0
+  10: 1
+  14: 2
+  18: 3
+#着地時に付与される移動速度低下のレベル設定
+#落下距離: レベル
 
-  FallImpact:
-  #落下衝撃により付与される移動速度低下のレベル設定
-    1: 0
-    3: 1
-    5: 2
-    7: 3
-    #落下距離: レベル
+'Number of first required hunters': 3
+#ゲームの準備開始時に募集するハンターの人数
 
-Hunter:
-#ハンターの設定
+'Level of speed effect that gave to hunter': 2
+#ハンターに付与される移動速度上昇のレベル
 
-  NumberOfFirstRequired: 3
-  #初回ハンター募集人数
-
-  SpeedLevel: 2
-  #ハンターに付与される移動速度上昇のレベル

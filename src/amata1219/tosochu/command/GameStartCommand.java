@@ -9,7 +9,7 @@ import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.Game;
 import amata1219.tosochu.playerdata.Permission;
 
-public class StartCommand implements Command {
+public class GameStartCommand implements GameCommand {
 
 	@Override
 	public String getName() {
@@ -22,13 +22,13 @@ public class StartCommand implements Command {
 	}
 
 	@Override
-	public void onCommand(Player sender, Args args) {
+	public void execute(Player sender, Args args) {
 		if(Game.isInGame()){
 			sender.sendMessage(ChatColor.RED + "現在ゲームが行われているため実行出来ません。");
 			return;
 		}
 
-		MapSettings settings = Tosochu.getPlugin().getMapSettings(sender.getWorld().getName());
+		MapSettings settings = Tosochu.getPlugin().getMapSettingsStorage().get(sender.getWorld());
 		if(settings == null){
 			sender.sendMessage(ChatColor.RED + "このワールドに対応した設定ファイルが存在しないため実行出来ません。");
 			return;

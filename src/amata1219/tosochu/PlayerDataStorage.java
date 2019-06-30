@@ -17,7 +17,7 @@ public class PlayerDataStorage {
 	private final HashMap<UUID, PlayerData> storage = new HashMap<>();
 
 	public PlayerDataStorage(){
-		for(Entry<String, ConfigurationSection> hierarchy : config.getHierarchies().entrySet()){
+		for(Entry<String, ConfigurationSection> hierarchy : config.getShallowSections().entrySet()){
 			ConfigurationSection section = hierarchy.getValue();
 			PlayerData data = new PlayerData(
 									UUID.fromString(hierarchy.getKey()),

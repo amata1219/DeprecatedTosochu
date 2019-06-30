@@ -27,22 +27,21 @@ public class Config {
 		this.file = new File(plugin.getDataFolder(), name);
 	}
 
-	public Config(String name, File file){
-		this.name = name;
+	public Config(File file){
+		this.name = file.getName();
 		this.file = file;
 	}
 
-	public Config create(){
-		return create(name);
+	public void create(){
+		create(name);
 	}
 
-	public Config create(String resourceFileName){
+	public void create(String resourceFileName){
 		if(!file.exists())
 			plugin.saveResource(resourceFileName, false);
-
-		return this;
 	}
 
+	//拡張子を除いたファイル名を返す
 	public String getName(){
 		return name.substring(0, name.length() - 4);
 	}
@@ -51,19 +50,7 @@ public class Config {
 		return config == null ? reload() : config;
 	}
 
-	public String getString(String key){
-		return get().getString(key);
-	}
-
-	public int getInt(String key){
-		return get().getInt(key);
-	}
-
-	public double getDouble(String key){
-		return get().getDouble(key);
-	}
-
-	public Map<String, ConfigurationSection> getHierarchies(){
+	public Map<String, ConfigurationSection> getShallowSections(){
 		Map<String, ConfigurationSection> hierarchies = new HashMap<>();
 		FileConfiguration config = get();
 		for(String key : config.getKeys(false))
@@ -90,6 +77,7 @@ public class Config {
 			return config;
 
 		config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(in, StandardCharsets.UTF_8)));
+
 		return config;
 	}
 
