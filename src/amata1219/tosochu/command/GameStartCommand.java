@@ -9,7 +9,7 @@ import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.Game;
 import amata1219.tosochu.playerdata.Permission;
 
-public class GameStartCommand implements GameCommand {
+public class GameStartCommand implements Command {
 
 	private final Tosochu plugin = Tosochu.getPlugin();
 
@@ -24,7 +24,7 @@ public class GameStartCommand implements GameCommand {
 	}
 
 	@Override
-	public void execute(Player sender, Args args) {
+	public void onCommand(Player sender, Args args) {
 		if(plugin.isInGame()){
 			sender.sendMessage(ChatColor.RED + "現在ゲームが行われているため実行出来ません。");
 			return;

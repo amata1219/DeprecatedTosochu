@@ -14,3 +14,4 @@ commands:
   mapmove:
   hrs:
    aliases: hsr
+  msr:

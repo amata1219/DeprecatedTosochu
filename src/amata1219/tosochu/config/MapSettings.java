@@ -16,14 +16,16 @@ import amata1219.tosochu.location.ImmutableLocation;
 public class MapSettings extends Config {
 
 	//このマップに対応するワールド
-	public final World world;
 	public final Difficulty difficulty;
 
 	public MapSettings(File file){
 		super(file);
 
-		world = Bukkit.getWorld(getName());
 		difficulty = Difficulty.valueOf(getString("Dfficulty").toUpperCase());
+	}
+
+	public World getWorld(){
+		return Bukkit.getWorld(getName());
 	}
 
 	public int getPreparationTime(){
@@ -111,7 +113,7 @@ public class MapSettings extends Config {
 	}
 
 	public ImmutableLocation getFirstSpawnLocation(){
-		return ImmutableLocation.at(world, getString("First spawn location"));
+		return ImmutableLocation.at(getString("First spawn location"));
 	}
 
 	public void setFirstSpawnLocation(int x, int y, int z){
@@ -119,7 +121,7 @@ public class MapSettings extends Config {
 	}
 
 	public ImmutableLocation getHunterSpawnLocation(){
-		return ImmutableLocation.at(world, getString("Hunter spawn location"));
+		return ImmutableLocation.at(getString("Hunter spawn location"));
 	}
 
 	public void setHunterSpawnLocation(int x, int y, int z){
@@ -131,7 +133,7 @@ public class MapSettings extends Config {
 		return section.getKeys(false)
 				.stream()
 				.map(key -> section.getString(key))
-				.map(xyz -> ImmutableLocation.at(world, xyz))
+				.map(xyz -> ImmutableLocation.at(xyz))
 				.collect(Collectors.toList());
 	}
 
@@ -153,7 +155,7 @@ public class MapSettings extends Config {
 		return section.getKeys(false)
 				.stream()
 				.map(key -> section.getString(key))
-				.map(xyz -> ImmutableLocation.at(world, xyz))
+				.map(xyz -> ImmutableLocation.at(xyz))
 				.collect(Collectors.toList());
 	}
 

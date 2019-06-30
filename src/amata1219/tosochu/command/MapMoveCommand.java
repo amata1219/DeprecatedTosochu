@@ -37,14 +37,14 @@ public class MapMoveCommand implements Command {
 		}
 
 		//ワールドをロードする
-		Bukkit.createWorld(new WorldCreator(worldName));
+		World world = new WorldCreator(worldName).createWorld();
 
 		World from = sender.getWorld();
 
 		//全プレイヤーを初期スポーン地点にテレポートさせる
 		ImmutableLocation location = storage.get(worldName).getFirstSpawnLocation();
 		for(Player player : Bukkit.getOnlinePlayers())
-			location.teleport(player);
+			location.teleport(world, player);
 
 		info(sender, "指定されたマップ(" + worldName + ")をロードしました。");
 

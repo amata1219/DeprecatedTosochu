@@ -1,6 +1,7 @@
 package amata1219.tosochu.command;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
@@ -36,12 +37,14 @@ public class MapLoadCommand implements Command {
 		}
 
 		//ワールドをロードする
-		Bukkit.createWorld(new WorldCreator(worldName));
+		World world = new WorldCreator(worldName).createWorld();
+
+		Bukkit.getServer().broadcastMessage(world == null ? "ワールドが存在しない又は既に読み込まれています。" : "ワールドが正しく読み込まれました。");
 
 		//全プレイヤーを初期スポーン地点にテレポートさせる
 		ImmutableLocation location = storage.get(worldName).getFirstSpawnLocation();
 		for(Player player : Bukkit.getOnlinePlayers())
-			location.teleport(player);
+			location.teleport(world, player);
 
 		info(sender, "指定されたマップ(" + worldName + ")をロードしました。");
 	}

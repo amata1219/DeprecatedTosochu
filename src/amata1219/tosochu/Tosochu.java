@@ -15,6 +15,7 @@ import amata1219.tosochu.command.GameEndCommand;
 import amata1219.tosochu.command.GameStartCommand;
 import amata1219.tosochu.command.HunterRandomSelectCommand;
 import amata1219.tosochu.command.MapLoadCommand;
+import amata1219.tosochu.command.MapSettingsReloadCommand;
 import amata1219.tosochu.command.MapUnloadCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
@@ -50,6 +51,8 @@ public class Tosochu extends JavaPlugin {
 		new Config("template.yml").create();
 
 		mapSettingsStorage = new MapSettingsStorage();
+		mapSettingsStorage.reload();
+
 		playerDataStorage = new PlayerDataStorage();
 
 		registerCommands(
@@ -58,7 +61,8 @@ public class Tosochu extends JavaPlugin {
 			new WorldTeleportCommand(),
 			new MapLoadCommand(),
 			new MapUnloadCommand(),
-			new HunterRandomSelectCommand()
+			new HunterRandomSelectCommand(),
+			new MapSettingsReloadCommand()
 		);
 
 		registerListeners(

@@ -77,12 +77,12 @@ public class Game {
 
 	public Game(MapSettings settings){
 		this.settings = settings;
-		world = settings.world;
+		world = settings.getWorld();
 		load(settings);
 	}
 
 	public void load(MapSettings settings){
-		if(!world.equals(settings.world))
+		if(!world.equals(settings.getWorld()))
 			new IllegalArgumentException("World must be same ");
 
 		unitPriceOfPrizeMoney = settings.getUnitPriceOfPrizeMoney();
@@ -307,7 +307,7 @@ public class Game {
 	}
 
 	public void giveMoneyToRunaways(){
-		for(Player runaway : getPlayers()){
+		for(Player runaway : getPlayers(Profession.RUNAWAY)){
 			int money = runawayMoney.get(runaway) + unitPriceOfPrizeMoney;
 			runawayMoney.put(runaway, money);
 			getDisplayer(runaway).updateMoney(money);
@@ -345,7 +345,7 @@ public class Game {
 
 		getDisplayer(player).updateProfession();
 
-		jailLocations.select().teleport(player);
+		jailLocations.select().teleport(world, player);
 	}
 
 	public void respawn(Player dropout){
@@ -354,7 +354,7 @@ public class Game {
 
 		becomeRunaway(dropout);
 
-		runawayRespawnLocations.select().teleport(dropout);
+		runawayRespawnLocations.select().teleport(world, dropout);
 	}
 
 	public void becomeHunter(Player player){
@@ -366,7 +366,7 @@ public class Game {
 		setProfession(player, Profession.HUNTER);
 		getDisplayer(player).updateProfession();
 
-		hunterSpawnPoint.teleport(player);
+		hunterSpawnPoint.teleport(world, player);
 
 		message(player, "あなたはハンターになりました。");
 		broadcast(player.getName() + "がハンターになりました。");
