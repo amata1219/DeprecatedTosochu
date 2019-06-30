@@ -2,6 +2,7 @@ package amata1219.tosochu;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -12,6 +13,7 @@ import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
 import amata1219.tosochu.command.GameEndCommand;
 import amata1219.tosochu.command.GameStartCommand;
+import amata1219.tosochu.command.HunterRandomSelectCommand;
 import amata1219.tosochu.command.MapLoadCommand;
 import amata1219.tosochu.command.MapUnloadCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
@@ -55,7 +57,8 @@ public class Tosochu extends JavaPlugin {
 			new GameEndCommand(),
 			new WorldTeleportCommand(),
 			new MapLoadCommand(),
-			new MapUnloadCommand()
+			new MapUnloadCommand(),
+			new HunterRandomSelectCommand()
 		);
 
 		registerListeners(
@@ -73,6 +76,9 @@ public class Tosochu extends JavaPlugin {
 		HandlerList.unregisterAll((JavaPlugin) this);
 
 		playerDataStorage.saveAll();
+
+		if(isInGame())
+			Bukkit.unloadWorld(game.world, false);
 	}
 
 	@Override

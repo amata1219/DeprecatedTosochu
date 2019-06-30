@@ -2,6 +2,7 @@ package amata1219.tosochu.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,7 +21,7 @@ import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
 import amata1219.tosochu.location.ImmutableLocation;
-import amata1219.tosochu.location.RandomLocationSelector;
+import amata1219.tosochu.location.LocationRandomSelector;
 
 public class Game {
 
@@ -45,8 +46,8 @@ public class Game {
 	private ImmutableLocation firstSpawnPoint;
 	private ImmutableLocation hunterSpawnPoint;
 
-	private RandomLocationSelector runawayRespawnLocations;
-	private RandomLocationSelector jailLocations;
+	private LocationRandomSelector runawayRespawnLocations;
+	private LocationRandomSelector jailLocations;
 
 	//落下時に付与する移動速度低下のエフェクト効果のレベル
 	//配列長は256なので落下距離を添え字にするだけで取得出来る
@@ -93,8 +94,8 @@ public class Game {
 		firstSpawnPoint = settings.getFirstSpawnLocation();
 		hunterSpawnPoint = settings.getHunterSpawnLocation();
 
-		runawayRespawnLocations = new RandomLocationSelector(settings.getRunawayRespawnLocations());
-		jailLocations = new RandomLocationSelector(settings.getJailSpawnLocations());
+		runawayRespawnLocations = new LocationRandomSelector(settings.getRunawayRespawnLocations());
+		jailLocations = new LocationRandomSelector(settings.getJailSpawnLocations());
 
 		fallImpact = settings.getFallImpact();
 	}
@@ -113,6 +114,14 @@ public class Game {
 
 	public Set<Player> getPlayers(){
 		return players.keySet();
+	}
+
+	public List<Player> getPlayers(Profession profession){
+		List<Player> list = new ArrayList<>();
+		for(Entry<Player, Profession> entry : players.entrySet())
+			if(profession == entry.getValue())
+				list.add(entry.getKey());
+		return list;
 	}
 
 	public boolean isRunaway(Player player){
@@ -277,16 +286,18 @@ public class Game {
 				break;
 
 			becomeHunter(applicant);
+			count--;
 		}
 
 		AtomicInteger counter = new AtomicInteger(count);
 
 		apply(Profession.RUNAWAY, (player) -> {
-			if(counter.get() > 0)
+			if(counter.get() > 0){
 				becomeHunter(player);
-
-			counter.decrementAndGet();
+				counter.decrementAndGet();
+			}
 		});
+
 		applicants.clear();
 	}
 
@@ -333,6 +344,8 @@ public class Game {
 		dropouts.put(player, System.currentTimeMillis());
 
 		getDisplayer(player).updateProfession();
+
+		jailLocations.select().teleport(player);
 	}
 
 	public void respawn(Player dropout){

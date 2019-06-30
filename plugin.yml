@@ -12,3 +12,5 @@ commands:
   mapload:
   mapunload:
   mapmove:
+  hrs:
+   aliases: hsr
