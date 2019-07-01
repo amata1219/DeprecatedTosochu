@@ -7,13 +7,13 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.game.OldGame;
 
 public class StatesDisplayer {
 
 	//スコアボードのラッパークラス
 
-	private final Game game;
+	private final OldGame game;
 	private final Player player;
 
 	private final Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -21,7 +21,7 @@ public class StatesDisplayer {
 
 	private String playerCount, profession, money;
 
-	public StatesDisplayer(Game game, Player player){
+	public StatesDisplayer(OldGame game, Player player){
 		this.game = game;
 		this.player = player;
 

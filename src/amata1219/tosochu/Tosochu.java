@@ -2,7 +2,6 @@ package amata1219.tosochu;
 
 import java.util.HashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -19,14 +18,17 @@ import amata1219.tosochu.command.MapSettingsReloadCommand;
 import amata1219.tosochu.command.MapUnloadCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.config.MapSettings;
+import amata1219.tosochu.game.OldGame;
 import amata1219.tosochu.playerdata.PlayerData;
+import amata1219.tosochu.storage.MapSettingsStorage;
+import amata1219.tosochu.storage.PlayerDataStorage;
 
 public class Tosochu extends JavaPlugin {
 
 	private static Tosochu plugin;
 
-	private Game playingGame;
+	private OldGame playingGame;
 
 	private final HashMap<String, Command> commands = new HashMap<>();
 
@@ -35,7 +37,6 @@ public class Tosochu extends JavaPlugin {
 
 	private Config config;
 	private Config messages;
-	private Config playerData;
 
 	@Override
 	public void onEnable(){
@@ -45,15 +46,17 @@ public class Tosochu extends JavaPlugin {
 
 		(messages = new Config("messages.yml")).create();
 
-		(playerData = new Config("player_data.yml")).create();
-
 		//テンプレートファイルを作成する
 		new Config("template.yml").create();
 
-		mapSettingsStorage = new MapSettingsStorage();
-		mapSettingsStorage.reload();
+		//マップ設定を格納するフォルダーを作成
+		MapSettingsStorage.mkdir();
 
-		playerDataStorage = new PlayerDataStorage();
+		//マップ設定のストレージをロードする
+		mapSettingsStorage = MapSettingsStorage.load();
+
+		//プレイヤーデータのストレージをロードする
+		playerDataStorage = PlayerDataStorage.load();
 
 		registerCommands(
 			new GameStartCommand(),
@@ -80,9 +83,6 @@ public class Tosochu extends JavaPlugin {
 		HandlerList.unregisterAll((JavaPlugin) this);
 
 		playerDataStorage.saveAll();
-
-		if(isInGame())
-			Bukkit.unloadWorld(game.world, false);
 	}
 
 	@Override
@@ -103,16 +103,28 @@ public class Tosochu extends JavaPlugin {
 		return plugin;
 	}
 
-	public boolean isInGame(){
-		return game != null;
-	}
-
 	public MapSettingsStorage getMapSettingsStorage(){
 		return mapSettingsStorage;
 	}
 
 	public PlayerDataStorage getPlayerDataStorage(){
 		return playerDataStorage;
+	}
+
+	public OldGame getGame(){
+		return playingGame;
+	}
+
+	public boolean isGamePlaying(){
+		return playingGame != null;
+	}
+
+	public OldGame loadGame(MapSettings settings){
+		return null;
+	}
+
+	public void unloadGame(){
+
 	}
 
 	public void registerCommands(Command... commands){

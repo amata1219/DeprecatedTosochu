@@ -1,10 +1,10 @@
 package amata1219.tosochu.game.timer;
 
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.game.OldGame;
 
 public class PreparationTimer extends Timer {
 
-	public PreparationTimer(Game game){
+	public PreparationTimer(OldGame game){
 		super(game, game.settings.getPreparationTime());
 	}
 

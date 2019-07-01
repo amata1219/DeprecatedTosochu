@@ -8,7 +8,7 @@ public interface GameCommand extends Command {
 
 	@Override
 	default void onCommand(Player sender, Args args){
-		if(!Tosochu.getPlugin().isInGame()){
+		if(!Tosochu.getPlugin().isGamePlaying()){
 			warn(sender, "ゲームが行われていないため実行出来ません。");
 			return;
 		}

@@ -1,4 +1,4 @@
-package amata1219.tosochu;
+package amata1219.tosochu.storage;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -17,7 +17,13 @@ public class PlayerDataStorage {
 	private final Config config = new Config("player_data.yml");
 	private final HashMap<UUID, PlayerData> storage = new HashMap<>();
 
-	public PlayerDataStorage(){
+	public static PlayerDataStorage load(){
+		return new PlayerDataStorage();
+	}
+
+	private PlayerDataStorage(){
+		config.create();
+
 		for(Entry<String, ConfigurationSection> hierarchy : config.getShallowSections().entrySet()){
 			ConfigurationSection section = hierarchy.getValue();
 			PlayerData data = new PlayerData(
@@ -47,7 +53,7 @@ public class PlayerDataStorage {
 	}
 
 	public boolean isExist(Player player){
-		return isExist(player);
+		return isExist(player.getUniqueId());
 	}
 
 	public boolean isExist(UUID uuid){

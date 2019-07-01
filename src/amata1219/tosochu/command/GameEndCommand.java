@@ -22,12 +22,12 @@ public class GameEndCommand implements Command {
 
 	@Override
 	public void onCommand(Player sender, Args args) {
-		if(!plugin.isInGame()){
+		if(!plugin.isGamePlaying()){
 			sender.sendMessage(ChatColor.RED + "現在ゲームが行われていないため実行出来ません。");
 			return;
 		}
 
-		plugin.game.end();
+		plugin.getGame().end();
 		sender.sendMessage(ChatColor.AQUA + "ゲームを強制終了しました。");
 	}
 

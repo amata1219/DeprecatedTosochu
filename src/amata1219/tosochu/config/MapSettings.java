@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,13 +16,8 @@ import amata1219.tosochu.location.ImmutableLocation;
 
 public class MapSettings extends Config {
 
-	//このマップに対応するワールド
-	public final Difficulty difficulty;
-
 	public MapSettings(File file){
 		super(file);
-
-		difficulty = Difficulty.valueOf(getString("Dfficulty").toUpperCase());
 	}
 
 	public World getWorld(){
@@ -44,8 +40,13 @@ public class MapSettings extends Config {
 		set("Time limit", limit);
 	}
 
+	public Difficulty getDifficulty(){
+		return Difficulty.valueOf(getString("Dfficulty").toUpperCase());
+	}
+
 	public void setDifficulty(Difficulty difficulty){
-		set("Difficulty", difficulty.toString());
+		Validate.notNull(difficulty, "Difficulty can not be null");
+		set("Difficulty", getDifficulty().toString());
 	}
 
 	public int getUnitPriceOfPrizeMoney(){
@@ -54,7 +55,7 @@ public class MapSettings extends Config {
 
 	public void setUnitPriceOfPrizeMoney(int money){
 		String[] values = getString("Unit price of prize money").split(",");
-		values[difficulty.ordinal()] = String.valueOf(money);
+		values[getDifficulty().ordinal()] = String.valueOf(money);
 		set("Unit price of prize money", String.join(",", values));
 	}
 
@@ -64,7 +65,7 @@ public class MapSettings extends Config {
 
 	public void setRespawnCooldownTime(int time){
 		String[] values = getString("Respawn cooldown time").split(",");
-		values[difficulty.ordinal()] = String.valueOf(time);
+		values[getDifficulty().ordinal()] = String.valueOf(time);
 		set("Respawn cooldown time", String.join(",", values));
 	}
 
@@ -74,7 +75,7 @@ public class MapSettings extends Config {
 
 	public void setCorrectionValueForCooldownTimeOfItem(int value){
 		String[] values = getString("Correction value for cooldown time of item").split(",");
-		values[difficulty.ordinal()] = String.valueOf(value);
+		values[getDifficulty().ordinal()] = String.valueOf(value);
 		set("Correction value for cooldown time of item", String.join(",", values));
 	}
 
@@ -84,7 +85,7 @@ public class MapSettings extends Config {
 
 	public void setCorrectionValueForAmountOfItems(int value){
 		String[] values = getString("Correction value for amount of items").split(",");
-		values[difficulty.ordinal()] = String.valueOf(value);
+		values[getDifficulty().ordinal()] = String.valueOf(value);
 		set("Correction value for amount of items", String.join(",", values));
 	}
 
@@ -219,7 +220,7 @@ public class MapSettings extends Config {
 	}
 
 	private String getPart(String key){
-		return difficulty.split(getString(key));
+		return getDifficulty().split(getString(key));
 	}
 
 	private boolean getBoolean(String key){

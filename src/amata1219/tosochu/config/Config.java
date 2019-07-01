@@ -25,6 +25,7 @@ public class Config {
 	public Config(String name){
 		this.name = name;
 		this.file = new File(plugin.getDataFolder(), name);
+		//UTF-8のファイルにすること
 	}
 
 	public Config(File file){
@@ -70,7 +71,7 @@ public class Config {
 	}
 
 	public FileConfiguration reload(){
-		config  = YamlConfiguration.loadConfiguration(file);
+		config = YamlConfiguration.loadConfiguration(file);
 
 		InputStream in = plugin.getResource(name);
 		if(in == null)

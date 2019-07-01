@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.Tosochu;
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.game.OldGame;
 import amata1219.tosochu.game.Profession;
 import amata1219.tosochu.playerdata.Permission;
 
@@ -29,7 +29,7 @@ public class HunterRandomSelectCommand implements GameCommand {
 		}
 
 		int numberOfHunters = args.nextInt();
-		Game game = Tosochu.getPlugin().game;
+		OldGame game = Tosochu.getPlugin().getGame();
 		List<Player> runaways = game.getPlayers(Profession.RUNAWAY);
 		if(runaways.size() <= numberOfHunters){
 			warn(sender, "指定された数は大きすぎます。");

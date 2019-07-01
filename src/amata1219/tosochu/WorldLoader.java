@@ -9,8 +9,7 @@ public class WorldLoader {
 		if(Bukkit.getWorld(worldName) != null)
 			new IllegalArgumentException("Already exist world");
 
-		WorldCreator creator = WorldCreator.name(worldName);
-		creator.createWorld();
+		WorldCreator.name(worldName).createWorld();
 	}
 
 	public static void unload(String worldName){

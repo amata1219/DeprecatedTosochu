@@ -19,9 +19,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.game.OldGame;
 import amata1219.tosochu.game.scoreboard.StatesDisplayer;
 import amata1219.tosochu.playerdata.PlayerData;
+import amata1219.tosochu.storage.PlayerDataStorage;
 
 public class GameListener implements Listener {
 
@@ -122,12 +123,12 @@ public class GameListener implements Listener {
 			displayer.setDisplay(item == null ? false : item.getType() == Material.BOOK);
 	}
 
-	private Game getGame(){
-		return plugin.game;
+	private OldGame getGame(){
+		return plugin.getGame();
 	}
 
 	private boolean shouldRun(Entity entity){
-		return plugin.isInGame() && (entity == null || getGame().world.equals(entity.getWorld()));
+		return plugin.isGamePlaying() && (entity == null || getGame().world.equals(entity.getWorld()));
 	}
 
 	private boolean isPlayer(Entity entity){

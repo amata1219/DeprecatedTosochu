@@ -1,16 +1,16 @@
 package amata1219.tosochu.game.timer;
 
-import amata1219.tosochu.game.Game;
+import amata1219.tosochu.game.OldGame;
 
 public class GameTimer extends Timer {
 
-	public GameTimer(Game game) {
+	public GameTimer(OldGame game) {
 		super(game, game.settings.getTimeLimit());
 	}
 
 	@Override
 	public void execute(){
-		game.giveMoneyToRunaways();
+		//賞金を与える
 	}
 
 	@Override

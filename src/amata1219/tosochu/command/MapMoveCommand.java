@@ -5,10 +5,10 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
-import amata1219.tosochu.MapSettingsStorage;
 import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.location.ImmutableLocation;
 import amata1219.tosochu.playerdata.Permission;
+import amata1219.tosochu.storage.MapSettingsStorage;
 
 public class MapMoveCommand implements Command {
 

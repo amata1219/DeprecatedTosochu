@@ -23,7 +23,7 @@ import amata1219.tosochu.game.timer.Timer;
 import amata1219.tosochu.location.ImmutableLocation;
 import amata1219.tosochu.location.LocationRandomSelector;
 
-public class Game {
+public class OldGame {
 
 	public final MapSettings settings;
 
@@ -75,7 +75,7 @@ public class Game {
 
 	private final String prefix = "§7[§4逃走中§7]§r ";
 
-	public Game(MapSettings settings){
+	public OldGame(MapSettings settings){
 		this.settings = settings;
 		world = settings.getWorld();
 		load(settings);
