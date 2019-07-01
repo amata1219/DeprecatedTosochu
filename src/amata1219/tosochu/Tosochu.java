@@ -26,7 +26,7 @@ public class Tosochu extends JavaPlugin {
 
 	private static Tosochu plugin;
 
-	public Game game;
+	private Game playingGame;
 
 	private final HashMap<String, Command> commands = new HashMap<>();
 
