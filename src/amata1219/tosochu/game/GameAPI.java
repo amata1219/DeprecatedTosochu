@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.config.MapSettings;
+import amata1219.tosochu.game.timer.Timer;
 
 public interface GameAPI {
 
@@ -18,13 +19,15 @@ public interface GameAPI {
 
 	void start();
 
-	void end();
+	void forcedTermination();
 
 	boolean isPreparing();
 
 	boolean isStarting();
 
-	boolean isEnding();
+	Timer getTimer();
+
+	void setTimer(Timer timer);
 
 	MapSettings getLoadedMapSettings();
 

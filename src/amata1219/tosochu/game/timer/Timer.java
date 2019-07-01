@@ -7,7 +7,7 @@ import amata1219.tosochu.game.GameAPI;
 
 public abstract class Timer extends BukkitRunnable {
 
-	private final GameAPI game;
+	protected final GameAPI game;
 	private final int timeLimit;
 	private int remainingTime;
 

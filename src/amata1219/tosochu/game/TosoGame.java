@@ -7,9 +7,15 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.config.MapSettings;
+import amata1219.tosochu.game.timer.GameTimer;
+import amata1219.tosochu.game.timer.PreparationTimer;
+import amata1219.tosochu.game.timer.Timer;
 
 public class TosoGame implements GameAPI {
+
+	private final Tosochu plugin = Tosochu.getPlugin();
 
 	private final MapSettings settings;
 
@@ -17,6 +23,8 @@ public class TosoGame implements GameAPI {
 
 	private final Map<Profession, List<Player>> professions = new HashMap<>();
 	private final Map<Player, Long> quittedPlayers = new HashMap<>();
+
+	private Timer timer;
 
 	public TosoGame(MapSettings settings){
 		this.settings = settings;
@@ -30,22 +38,24 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public void end() {
+	public void forcedTermination() {
 	}
 
 	@Override
 	public boolean isPreparing() {
-		return false;
+		return timer instanceof PreparationTimer;
 	}
 
 	@Override
 	public boolean isStarting() {
-		return false;
+		return timer instanceof GameTimer;
 	}
 
 	@Override
-	public boolean isEnding() {
-		return false;
+	public void setTimer(Timer timer){
+		this.timer = timer;
+
+		timer.runTaskTimer(plugin, 20, 20);
 	}
 
 	@Override
@@ -55,10 +65,19 @@ public class TosoGame implements GameAPI {
 
 	@Override
 	public void join(Player player) {
+		players.add(player);
+
+		if(isQuitted(player)){
+
+		}
 	}
 
 	@Override
 	public void quit(Player player) {
+		players.remove(player);
+
+		//ログアウト時刻を記録
+		quittedPlayers.put(player, System.currentTimeMillis());
 	}
 
 	@Override

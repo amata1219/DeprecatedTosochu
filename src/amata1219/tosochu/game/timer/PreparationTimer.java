@@ -1,11 +1,11 @@
 package amata1219.tosochu.game.timer;
 
-import amata1219.tosochu.game.OldGame;
+import amata1219.tosochu.game.GameAPI;
 
 public class PreparationTimer extends Timer {
 
-	public PreparationTimer(OldGame game){
-		super(game, game.settings.getPreparationTime());
+	public PreparationTimer(GameAPI game){
+		super(game, game.getLoadedMapSettings().getPreparationTime());
 	}
 
 	@Override
@@ -14,8 +14,10 @@ public class PreparationTimer extends Timer {
 
 	@Override
 	public void end(){
-		super.end();
-		game.start();
+		cancel();
+
+		//ゲームを開始する
+		game.setTimer(new GameTimer(game));
 	}
 
 }

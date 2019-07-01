@@ -1,11 +1,11 @@
 package amata1219.tosochu.game.timer;
 
-import amata1219.tosochu.game.OldGame;
+import amata1219.tosochu.game.GameAPI;
 
 public class GameTimer extends Timer {
 
-	public GameTimer(OldGame game) {
-		super(game, game.settings.getTimeLimit());
+	public GameTimer(GameAPI game) {
+		super(game, game.getLoadedMapSettings().getTimeLimit());
 	}
 
 	@Override
@@ -15,7 +15,7 @@ public class GameTimer extends Timer {
 
 	@Override
 	public void end(){
-		super.end();
+		cancel();
 	}
 
 }
