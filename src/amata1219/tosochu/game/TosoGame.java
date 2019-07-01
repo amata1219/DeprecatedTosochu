@@ -42,13 +42,8 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public boolean isPreparing() {
-		return timer instanceof PreparationTimer;
-	}
-
-	@Override
-	public boolean isStarting() {
-		return timer instanceof GameTimer;
+	public Timer getTimer(){
+		return timer;
 	}
 
 	@Override

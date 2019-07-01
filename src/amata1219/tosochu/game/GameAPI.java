@@ -7,6 +7,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.config.MapSettings;
+import amata1219.tosochu.game.timer.GameTimer;
+import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
 
 public interface GameAPI {
@@ -21,9 +23,13 @@ public interface GameAPI {
 
 	void forcedTermination();
 
-	boolean isPreparing();
+	default boolean isPreparing(){
+		return getTimer() instanceof PreparationTimer;
+	}
 
-	boolean isStarting();
+	default boolean isStarting(){
+		return getTimer() instanceof GameTimer;
+	}
 
 	Timer getTimer();
 
