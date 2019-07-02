@@ -10,6 +10,7 @@ import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
+import amata1219.tosochu.location.ImmutableLocation;
 
 public interface GameAPI {
 
@@ -21,7 +22,14 @@ public interface GameAPI {
 
 	void start();
 
-	void forcedTermination();
+	default void forcedTermination(){
+		for(Player player : getPlayers()){
+
+			//スコアボードやスペクテイター状態を外す
+
+			getRandomRespawnLocation().teleport(getWorld(), player);
+		}
+	}
 
 	default boolean isPreparing(){
 		return getTimer() instanceof PreparationTimer;
@@ -44,6 +52,26 @@ public interface GameAPI {
 	default Difficulty getDifficulty(){
 		return getLoadedMapSettings().getDifficulty();
 	}
+
+	int getUnitPriceOfPrizeMoney();
+
+	int setUnitPriceOfPrizeMoney(int money);
+
+	int getMoney(Player player);
+
+	int setMoney(Player player, int money);
+
+	default void depositMoney(Player player, int money){
+		setMoney(player, getMoney(player) + money);
+	}
+
+	default void withdrawMoney(Player player, int money){
+		setMoney(player, Math.min(getMoney(player) - money, 0));
+	}
+
+	ImmutableLocation getRandomRespawnLocation();
+
+	ImmutableLocation getRandomJailLocation();
 
 	void join(Player player);
 

@@ -26,6 +26,11 @@ import amata1219.tosochu.storage.PlayerDataStorage;
 
 public class Tosochu extends JavaPlugin {
 
+	/*
+	 * マップロード時にGameインスタンスを生成する
+	 * GameLoaderは/mapload, /mapmove時に使用される
+	 */
+
 	private static Tosochu plugin;
 
 	private OldGame playingGame;
@@ -42,8 +47,10 @@ public class Tosochu extends JavaPlugin {
 	public void onEnable(){
 		plugin = this;
 
+		//config.ymlを生成する
 		(config = new Config("config.yml")).create();
 
+		//messages.ymlを生成する
 		(messages = new Config("messages.yml")).create();
 
 		//テンプレートファイルを作成する
@@ -58,6 +65,7 @@ public class Tosochu extends JavaPlugin {
 		//プレイヤーデータのストレージをロードする
 		playerDataStorage = PlayerDataStorage.load();
 
+		//コマンドを登録する
 		registerCommands(
 			new GameStartCommand(),
 			new GameEndCommand(),
@@ -68,6 +76,7 @@ public class Tosochu extends JavaPlugin {
 			new MapSettingsReloadCommand()
 		);
 
+		//イベントリスナを登録する
 		registerListeners(
 			new GameListener()
 		);

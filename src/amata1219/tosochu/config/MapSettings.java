@@ -20,8 +20,12 @@ public class MapSettings extends Config {
 		super(file);
 	}
 
+	public String getWorldName(){
+		return getName();
+	}
+
 	public World getWorld(){
-		return Bukkit.getWorld(getName());
+		return Bukkit.getWorld(getWorldName());
 	}
 
 	public int getPreparationTime(){

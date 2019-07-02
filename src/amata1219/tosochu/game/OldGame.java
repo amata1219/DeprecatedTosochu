@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.config.MapSettings;
-import amata1219.tosochu.game.scoreboard.StatesDisplayer;
+import amata1219.tosochu.game.displayer.OldDisplayer;
 import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
@@ -70,7 +70,7 @@ public class OldGame {
 	//ログアウトしたハンター
 	private final ArrayList<Player> quittedHunters = new ArrayList<>();
 
-	private final HashMap<Player, StatesDisplayer> displayers = new HashMap<>();
+	private final HashMap<Player, OldDisplayer> displayers = new HashMap<>();
 	private final HashMap<Player, Integer> runawayMoney = new HashMap<>();
 
 	private final String prefix = "§7[§4逃走中§7]§r ";
@@ -202,9 +202,9 @@ public class OldGame {
 
 		players.put(player, Profession.PLAYER);
 
-		displayers.values().forEach(StatesDisplayer::updatePlayerCount);
+		displayers.values().forEach(OldDisplayer::updatePlayerCount);
 
-		displayers.put(player, new StatesDisplayer(this, player));
+		displayers.put(player, new OldDisplayer(this, player));
 
 		broadcast(player.getName() + "が参加しました。");
 
@@ -318,7 +318,7 @@ public class OldGame {
 		return runawayMoney.getOrDefault(player, 0);
 	}
 
-	public StatesDisplayer getDisplayer(Player player){
+	public OldDisplayer getDisplayer(Player player){
 		return displayers.get(player);
 	}
 

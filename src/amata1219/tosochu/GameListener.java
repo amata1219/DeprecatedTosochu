@@ -20,7 +20,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import amata1219.tosochu.game.OldGame;
-import amata1219.tosochu.game.scoreboard.StatesDisplayer;
+import amata1219.tosochu.game.displayer.OldDisplayer;
 import amata1219.tosochu.playerdata.PlayerData;
 import amata1219.tosochu.storage.PlayerDataStorage;
 
@@ -118,7 +118,7 @@ public class GameListener implements Listener {
 
 		Inventory inventory = player.getInventory();
 		ItemStack item = inventory.getItem(event.getNewSlot());
-		StatesDisplayer displayer = getGame().getDisplayer(player);
+		OldDisplayer displayer = getGame().getDisplayer(player);
 		if(displayer != null)
 			displayer.setDisplay(item == null ? false : item.getType() == Material.BOOK);
 	}

@@ -1,4 +1,4 @@
-package amata1219.tosochu.game.scoreboard;
+package amata1219.tosochu.game.displayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,13 +7,13 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
-import amata1219.tosochu.game.OldGame;
+import amata1219.tosochu.game.GameAPI;
 
-public class StatesDisplayer {
+public class OldDisplayer {
 
 	//スコアボードのラッパークラス
 
-	private final OldGame game;
+	private final GameAPI game;
 	private final Player player;
 
 	private final Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -21,13 +21,13 @@ public class StatesDisplayer {
 
 	private String playerCount, profession, money;
 
-	public StatesDisplayer(OldGame game, Player player){
+	public OldDisplayer(GameAPI game, Player player){
 		this.game = game;
 		this.player = player;
 
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-		set(0, "難易度: " + game.settings.difficulty);
+		set(0, "難易度: " + game.getDifficulty());
 		set(1, "");
 		set(2, playerCount = "参加人数: " + game.getPlayers().size());
 		set(3, "");
