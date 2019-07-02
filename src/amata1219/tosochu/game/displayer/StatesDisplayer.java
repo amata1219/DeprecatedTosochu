@@ -60,6 +60,20 @@ public abstract class StatesDisplayer {
 		//指定されたスコアに現在表示されているテキストを削除する
 		board.resetScores(texts.get(score));
 
+		//テキストをセットする
+		set(score, text);
+	}
+
+	protected void initialize(String... texts){
+		if(texts.length > 15)
+			throw new IllegalArgumentException("Texts length be 15 or less");
+
+		//配列の値を前から順にボードの上から下にセットしていく
+		for(int i = 0; i < texts.length; i++)
+			set(15 - i, texts[i]);
+	}
+
+	protected void set(int score, String text){
 		//複製マップに新しいテキストを記録し、指定されたスコアに新しいテキストをセットする
 		objective.getScore(texts.put(score, text)).setScore(score);
 	}
