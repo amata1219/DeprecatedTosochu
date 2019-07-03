@@ -11,4 +11,12 @@ public enum Difficulty {
 		return text.split(",")[ordinal()];
 	}
 
+	public int splitAndToInt(String text){
+		return Integer.valueOf(split(text));
+	}
+
+	public double splitAndToDouble(String text){
+		return Double.valueOf(split(text));
+	}
+
 }

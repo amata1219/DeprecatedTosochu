@@ -1,4 +1,4 @@
-package amata1219.tosochu.game.displayer;
+package amata1219.tosochu.game.displayer.scoreboard;
 
 import java.util.HashMap;
 
@@ -12,7 +12,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 import amata1219.tosochu.game.GameAPI;
 
-public abstract class StatesDisplayer {
+public abstract class StatesScoreboard {
 
 	//スコアは0～14の間を使用、重複無し
 
@@ -27,7 +27,7 @@ public abstract class StatesDisplayer {
 	//スコアの更新を円滑に行う為のボードのテキスト複製マップ
 	protected HashMap<Integer, String> texts = new HashMap<>(15);
 
-	protected StatesDisplayer(GameAPI game, Player player){
+	protected StatesScoreboard(GameAPI game, Player player){
 		this.game = game;
 		this.player = player;
 
@@ -51,8 +51,10 @@ public abstract class StatesDisplayer {
 			player.setScoreboard(display ? board : manager.getNewScoreboard());
 	}
 
+	public abstract void updateStates();
+
 	//指定されたスコアのテキストを書き換える
-	public void update(int score, String text){
+	public void updateText(int score, String text){
 		//スコアが範囲外であればエラーを投げる
 		if(score < 0 || 14 < score)
 			throw new IllegalArgumentException("Score must be in the range 0 to 15");

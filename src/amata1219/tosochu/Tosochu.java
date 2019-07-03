@@ -18,8 +18,6 @@ import amata1219.tosochu.command.MapSettingsReloadCommand;
 import amata1219.tosochu.command.MapUnloadCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
-import amata1219.tosochu.config.MapSettings;
-import amata1219.tosochu.game.OldGame;
 import amata1219.tosochu.playerdata.PlayerData;
 import amata1219.tosochu.storage.MapSettingsStorage;
 import amata1219.tosochu.storage.PlayerDataStorage;
@@ -33,25 +31,25 @@ public class Tosochu extends JavaPlugin {
 
 	private static Tosochu plugin;
 
-	private OldGame playingGame;
-
 	private final HashMap<String, Command> commands = new HashMap<>();
 
 	private MapSettingsStorage mapSettingsStorage;
 	private PlayerDataStorage playerDataStorage;
 
-	private Config config;
-	private Config messages;
+	public final GameLoader gameLoader = new GameLoader();
+
+	private Config mainConfig;
+	private Config messagesConfig;
 
 	@Override
 	public void onEnable(){
 		plugin = this;
 
 		//config.ymlを生成する
-		(config = new Config("config.yml")).create();
+		(mainConfig = new Config("config.yml")).create();
 
 		//messages.ymlを生成する
-		(messages = new Config("messages.yml")).create();
+		(messagesConfig = new Config("messages.yml")).create();
 
 		//テンプレートファイルを作成する
 		new Config("template.yml").create();
@@ -120,20 +118,12 @@ public class Tosochu extends JavaPlugin {
 		return playerDataStorage;
 	}
 
-	public OldGame getGame(){
-		return playingGame;
+	public Config getMainConfig(){
+		return mainConfig;
 	}
 
-	public boolean isGamePlaying(){
-		return playingGame != null;
-	}
-
-	public OldGame loadGame(MapSettings settings){
-		return null;
-	}
-
-	public void unloadGame(){
-
+	public Config getMessagesConfig(){
+		return messagesConfig;
 	}
 
 	public void registerCommands(Command... commands){

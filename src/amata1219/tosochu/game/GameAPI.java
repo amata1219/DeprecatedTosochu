@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.config.MapSettings;
@@ -35,8 +36,12 @@ public interface GameAPI {
 		return getTimer() instanceof PreparationTimer;
 	}
 
-	default boolean isStarting(){
+	default boolean isNowPlaying(){
 		return getTimer() instanceof GameTimer;
+	}
+
+	default boolean isEnded(){
+		return false;
 	}
 
 	Timer getTimer();
@@ -53,54 +58,38 @@ public interface GameAPI {
 		return getLoadedMapSettings().getDifficulty();
 	}
 
-	int getUnitPriceOfPrizeMoney();
-
-	int setUnitPriceOfPrizeMoney(int money);
-
-	int getMoney(Player player);
-
-	int setMoney(Player player, int money);
-
-	default void depositMoney(Player player, int money){
-		setMoney(player, getMoney(player) + money);
-	}
-
-	default void withdrawMoney(Player player, int money){
-		setMoney(player, Math.min(getMoney(player) - money, 0));
-	}
-
 	ImmutableLocation getRandomRespawnLocation();
 
 	ImmutableLocation getRandomJailLocation();
 
-	void join(Player player);
+	int getUnitPriceOfPrizeMoney();
 
-	void quit(Player player);
-
-	void recruitHunters(int recruitmentNumber);
-
-	boolean isRecruitingHunters();
+	int setUnitPriceOfPrizeMoney(int money);
 
 	List<Player> getPlayers();
 
 	List<Player> getQuittedPlayers();
 
-	List<Player> getMatchedPlayers(Profession profession);
+	List<Player> getPlayersByProfession(Profession profession);
 
 	default List<Player> getRunaways(){
-		return getMatchedPlayers(Profession.RUNAWAY);
+		return getPlayersByProfession(Profession.RUNAWAY);
 	}
 
 	default List<Player> getDropouts(){
-		return getMatchedPlayers(Profession.DROPOUT);
+		return getPlayersByProfession(Profession.DROPOUT);
 	}
 
 	default List<Player> getHunters(){
-		return getMatchedPlayers(Profession.HUNTER);
+		return getPlayersByProfession(Profession.HUNTER);
+	}
+
+	default List<Player> getReporters(){
+		return getPlayersByProfession(Profession.REPORTER);
 	}
 
 	default List<Player> getSpectators(){
-		return getMatchedPlayers(Profession.SPECTATOR);
+		return getPlayersByProfession(Profession.SPECTATOR);
 	}
 
 	List<Player> getApplicantsForHunterLottery();
@@ -111,6 +100,19 @@ public interface GameAPI {
 
 	default boolean isQuitted(Player player){
 		return getQuittedPlayers().contains(player);
+	}
+
+	default Profession gerProfession(Player player){
+		if(isRunaway(player))
+			return Profession.RUNAWAY;
+		else if(isDropout(player))
+			return Profession.DROPOUT;
+		else if(isHunter(player))
+			return Profession.HUNTER;
+		else if(isReporter(player))
+			return Profession.REPORTER;
+		else
+			return Profession.SPECTATOR;
 	}
 
 	default boolean isRunaway(Player player){
@@ -125,12 +127,59 @@ public interface GameAPI {
 		return getHunters().contains(player);
 	}
 
+	default boolean isReporter(Player player){
+		return getReporters().contains(player);
+	}
+
 	default boolean isSpectator(Player player){
 		return getSpectators().contains(player);
 	}
 
 	default boolean isApplicantForHunterLottery(Player player){
 		return getApplicantsForHunterLottery().contains(player);
+	}
+
+	int getMoney(Player player);
+
+	int setMoney(Player player, int money);
+
+	default void depositMoney(Player player, int money){
+		setMoney(player, getMoney(player) + money);
+	}
+
+	default void withdrawMoney(Player player, int money){
+		setMoney(player, Math.min(getMoney(player) - money, 0));
+	}
+
+	Difficulty getDifficulty(Player player);
+
+	void setDifficulty(Player player, Difficulty difficulty);
+
+	void join(Player player);
+
+	void quit(Player player);
+
+	int fall(Player runaway);
+
+	void recruitHunters(int recruitmentNumberOfHunters);
+
+	boolean isRecruitingHunters();
+
+	default boolean isFindRunaway(Player hunter){
+		for(Entity entity : hunter.getNearbyEntities(25, 25, 25))
+			if(entity instanceof Player)
+				if(isRunaway((Player) entity))
+					return true;
+
+		return false;
+	}
+
+	default boolean isLockOnRunaway(Player hunter){
+		return hunter.getFoodLevel() > 6;
+	}
+
+	default void setLockOnRunaway(Player hunter, boolean lockOn){
+		hunter.setFoodLevel(lockOn ? 20 : 4);
 	}
 
 	default void broadcastMessage(String message){

@@ -53,8 +53,8 @@ public class MapSettings extends Config {
 		set("Difficulty", getDifficulty().toString());
 	}
 
-	public int getUnitPriceOfPrizeMoney(){
-		return Integer.valueOf(getPart("Unit price of prize money"));
+	public int getUnitPriceOfPrizeMoney(Difficulty difficulty){
+		return difficulty.splitAndToInt(getString("Unit price of prize money"));
 	}
 
 	public void setUnitPriceOfPrizeMoney(int money){
@@ -63,8 +63,8 @@ public class MapSettings extends Config {
 		set("Unit price of prize money", String.join(",", values));
 	}
 
-	public int getRespawnCooldownTime(){
-		return Integer.valueOf(getPart("Respawn cooldown time"));
+	public int getRespawnCooldownTime(Difficulty difficulty){
+		return difficulty.splitAndToInt(getString("Respawn cooldown time"));
 	}
 
 	public void setRespawnCooldownTime(int time){
@@ -73,8 +73,8 @@ public class MapSettings extends Config {
 		set("Respawn cooldown time", String.join(",", values));
 	}
 
-	public double getCorrectionValueForCooldownTimeOfItem(){
-		return Double.valueOf(getPart("Correction value for cooldown time of item"));
+	public double getCorrectionValueForCooldownTimeOfItem(Difficulty difficulty){
+		return difficulty.splitAndToDouble(getString("Correction value for cooldown time of item"));
 	}
 
 	public void setCorrectionValueForCooldownTimeOfItem(int value){
@@ -83,8 +83,8 @@ public class MapSettings extends Config {
 		set("Correction value for cooldown time of item", String.join(",", values));
 	}
 
-	public int getCorrectionValueForAmountOfItems(){
-		return Integer.valueOf(getPart("Correction value for amount of items"));
+	public int getCorrectionValueForAmountOfItems(Difficulty difficulty){
+		return difficulty.splitAndToInt(getString("Correction value for amount of items"));
 	}
 
 	public void setCorrectionValueForAmountOfItems(int value){
@@ -221,10 +221,6 @@ public class MapSettings extends Config {
 
 	private String getString(String key){
 		return get().getString(key);
-	}
-
-	private String getPart(String key){
-		return getDifficulty().split(getString(key));
 	}
 
 	private boolean getBoolean(String key){

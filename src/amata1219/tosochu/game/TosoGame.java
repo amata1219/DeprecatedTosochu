@@ -26,82 +26,17 @@ public class TosoGame implements GameAPI {
 
 	private Timer timer;
 
+	private int recruitmentNumberOfHunters;
+	private final List<Player> applicantsForHunterLottery = new ArrayList<>();
+
+	private final Map<Player, Difficulty> difficulties = new HashMap<>();
+	private final Map<Player, Integer> money = new HashMap<>();
+
 	public TosoGame(MapSettings settings){
 		this.settings = settings;
 
 		for(Profession profession : Profession.values())
 			professions.put(profession, new ArrayList<>());
-	}
-
-	@Override
-	public void start() {
-	}
-
-	@Override
-	public void forcedTermination() {
-	}
-
-	@Override
-	public Timer getTimer(){
-		return timer;
-	}
-
-	@Override
-	public void setTimer(Timer timer){
-		this.timer = timer;
-
-		timer.runTaskTimer(plugin, 20, 20);
-	}
-
-	@Override
-	public MapSettings getLoadedMapSettings() {
-		return settings;
-	}
-
-	@Override
-	public void join(Player player) {
-		players.add(player);
-
-		if(isQuitted(player)){
-
-		}
-	}
-
-	@Override
-	public void quit(Player player) {
-		players.remove(player);
-
-		//ログアウト時刻を記録
-		quittedPlayers.put(player, System.currentTimeMillis());
-	}
-
-	@Override
-	public void recruitHunters(int recruitmentNumber) {
-	}
-
-	@Override
-	public boolean isRecruitingHunters() {
-		return false;
-	}
-
-	@Override
-	public List<Player> getPlayers() {
-		return players;
-	}
-
-	@Override
-	public List<Player> getQuittedPlayers() {
-		return new ArrayList<>(quittedPlayers.keySet());
-	}
-
-	@Override
-	public List<Player> getMatchedPlayers(Profession profession) {
-		return professions.get(profession);
-	}
-
-	@Override
-	public List<Player> getApplicantsForHunterLottery() {
-		return null;
 	}
 
 }

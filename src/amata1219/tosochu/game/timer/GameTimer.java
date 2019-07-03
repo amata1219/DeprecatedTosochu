@@ -1,5 +1,7 @@
 package amata1219.tosochu.game.timer;
 
+import org.bukkit.entity.Player;
+
 import amata1219.tosochu.game.GameAPI;
 
 public class GameTimer extends Timer {
@@ -11,6 +13,10 @@ public class GameTimer extends Timer {
 	@Override
 	public void execute(){
 		//賞金を与える
+		for(Player runaway : game.getRunaways())
+			game.depositMoney(runaway, game.getLoadedMapSettings().getUnitPriceOfPrizeMoney(game.getDifficulty(runaway)));
+		
+		
 	}
 
 	@Override
