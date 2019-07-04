@@ -18,19 +18,20 @@ public class Config {
 
 	private final Tosochu plugin = Tosochu.getPlugin();
 
-	private final String name;
 	private final File file;
+	private final String name;
+	public final String pureName;
 	private FileConfiguration config;
 
 	public Config(String name){
-		this.name = name;
-		this.file = new File(plugin.getDataFolder(), name);
+		this(new File(Tosochu.getPlugin().getDataFolder(), name));
 		//UTF-8のファイルにすること
 	}
 
 	public Config(File file){
-		this.name = file.getName();
 		this.file = file;
+		this.name = file.getName();
+		pureName = name.substring(0, name.length() - 4);
 	}
 
 	public void create(){
@@ -40,11 +41,6 @@ public class Config {
 	public void create(String resourceFileName){
 		if(!file.exists())
 			plugin.saveResource(resourceFileName, false);
-	}
-
-	//拡張子を除いたファイル名を返す
-	public String getName(){
-		return name.substring(0, name.length() - 4);
 	}
 
 	public FileConfiguration get(){

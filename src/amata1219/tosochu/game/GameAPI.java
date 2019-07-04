@@ -1,13 +1,17 @@
 package amata1219.tosochu.game;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.config.MapSettings;
+import amata1219.tosochu.game.displayer.StatesDisplayer;
 import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
@@ -24,12 +28,16 @@ public interface GameAPI {
 	void start();
 
 	default void forcedTermination(){
-		for(Player player : getPlayers()){
+		for(Player player : getOnlinePlayers()){
 
 			//スコアボードやスペクテイター状態を外す
 
 			getRandomRespawnLocation().teleport(getWorld(), player);
 		}
+	}
+
+	default boolean isBeforeStart(){
+		return !isPreparing() && !isNowPlaying();
 	}
 
 	default boolean isPreparing(){
@@ -52,6 +60,8 @@ public interface GameAPI {
 
 	MapSettings getLoadedMapSettings();
 
+	void reloadMapSettings();
+
 	default World getWorld(){
 		return getLoadedMapSettings().getWorld();
 	}
@@ -64,15 +74,23 @@ public interface GameAPI {
 
 	ImmutableLocation getRandomJailLocation();
 
-	int getUnitPriceOfPrizeMoney();
+	int getUnitPriceOfPrizeMoney(Difficulty difficulty);
 
-	int setUnitPriceOfPrizeMoney(int money);
+	void setUnitPriceOfPrizeMoney(Difficulty difficulty, int money);
 
-	List<Player> getPlayers();
+	List<UUID> getPlayers();
 
-	List<Player> getQuittedPlayers();
+	default List<Player> getOnlinePlayers(){
+		List<Player> players = new ArrayList<>();
+		for(UUID uuid : getPlayers())
+			if(Bukkit.getOfflinePlayer(uuid).isOnline())
+				players.add(Bukkit.getPlayer(uuid));
+		return players;
+	}
 
-	List<Player> getAdiministrators();
+	List<UUID> getQuittedPlayers();
+
+	List<UUID> getAdiministrators();
 
 	List<Player> getPlayersByProfession(Profession profession);
 
@@ -103,11 +121,11 @@ public interface GameAPI {
 	}
 
 	default boolean isQuitted(Player player){
-		return getQuittedPlayers().contains(player);
+		return getQuittedPlayers().contains(player.getUniqueId());
 	}
 
 	default boolean isAdiministrator(Player player){
-		return getAdiministrators().contains(player);
+		return getAdiministrators().contains(player.getUniqueId());
 	}
 
 	default Profession getProfession(Player player){
@@ -147,9 +165,13 @@ public interface GameAPI {
 		return getApplicantsForHunterLottery().contains(player);
 	}
 
+	Difficulty getDifficulty(Player player);
+
+	void setDifficulty(Player player, Difficulty difficulty);
+
 	int getMoney(Player player);
 
-	int setMoney(Player player, int money);
+	void setMoney(Player player, int money);
 
 	default void depositMoney(Player player, int money){
 		setMoney(player, getMoney(player) + money);
@@ -159,17 +181,19 @@ public interface GameAPI {
 		setMoney(player, Math.min(getMoney(player) - money, 0));
 	}
 
-	Difficulty getDifficulty(Player player);
-
-	void setDifficulty(Player player, Difficulty difficulty);
+	StatesDisplayer getStatesDisplayer(Player player);
 
 	void join(Player player);
 
 	void quit(Player player);
 
-	int fall(Player runaway);
+	void fall(Player runaway);
 
-	void recruitHunters(int recruitmentNumberOfHunters);
+	void touchedByHunter(Player runaway);
+
+	void tryRespawn(Player dropout);
+
+	void recruitHunters(int recruitmentNumberOfHunters, int waitTime);
 
 	boolean isRecruitingHunters();
 
@@ -192,7 +216,7 @@ public interface GameAPI {
 
 	default void broadcastMessage(String message){
 		String text = PREFIX + message;
-		for(Player player : getPlayers())
+		for(Player player : getOnlinePlayers())
 			player.sendMessage(text);
 	}
 
@@ -201,12 +225,12 @@ public interface GameAPI {
 	}
 
 	default void broadcastTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut){
-		for(Player player : getPlayers())
+		for(Player player : getOnlinePlayers())
 			player.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
 	}
 
 	default void broadcastSound(Sound sound, float volume, float pitch){
-		for(Player player : getPlayers())
+		for(Player player : getOnlinePlayers())
 			player.playSound(player.getLocation(), sound, volume, pitch);
 	}
 

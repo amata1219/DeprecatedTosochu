@@ -54,7 +54,7 @@ public class MapSettingsStorage {
 		//ファイルを読み込む
 		for(File file : folder.listFiles()){
 			MapSettings settings = new MapSettings(file);
-			this.settings.put(settings.getName(), settings);
+			this.settings.put(settings.pureName, settings);
 			System.out.println("Loaded map settings - " + file.getName());
 		}
 	}

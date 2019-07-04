@@ -9,9 +9,6 @@ commands:
   end:
     aliases: g_end
   worldtp:
-  mapload:
-  mapunload:
   mapmove:
   hrs:
    aliases: hsr
-  msr:

@@ -1,17 +1,13 @@
 package amata1219.tosochu.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import amata1219.tosochu.GameLoader;
 import amata1219.tosochu.Tosochu;
-import amata1219.tosochu.config.MapSettings;
-import amata1219.tosochu.game.OldGame;
+import amata1219.tosochu.game.GameAPI;
 import amata1219.tosochu.playerdata.Permission;
 
 public class GameStartCommand implements Command {
-
-	private final Tosochu plugin = Tosochu.getPlugin();
 
 	@Override
 	public String getName() {
@@ -19,31 +15,29 @@ public class GameStartCommand implements Command {
 	}
 
 	@Override
-	public Permission getPermission(){
+	public Permission getPermission() {
 		return Permission.ADMINISTRATOR;
 	}
 
 	@Override
 	public void onCommand(Player sender, Args args) {
-		if(plugin.isGamePlaying()){
-			sender.sendMessage(ChatColor.RED + "現在ゲームが行われているため実行出来ません。");
-			return;
-		}
+		GameLoader loader = Tosochu.getPlugin().gameLoader;
+		GameAPI game = loader.getGame();
+		if(game != null){
+			if(game.getHunters().size() <= 0){
+				warn(sender, "ハンターが選ばれていません。");
+				return;
+			}
 
-		MapSettings settings = Tosochu.getPlugin().getMapSettingsStorage().getMapSettings(sender.getWorld());
-		if(settings == null){
-			sender.sendMessage(ChatColor.RED + "このワールドに対応した設定ファイルが存在しないため実行出来ません。");
-			return;
-		}
+			if(!game.isBeforeStart()){
+				warn(sender, "既にゲームは始まっています。");
+				return;
+			}
 
-		OldGame game = plugin.loadGame(settings);
-		game.prepare();
-		sender.sendMessage(ChatColor.AQUA + "ゲームの準備を開始しました。");
-
-		for(Player player : Bukkit.getOnlinePlayers()){
-			game.join(player);
+			game.start();
+		}else{
+			warn(sender, "このワールドでは実行出来ません。");
 		}
-		game.broadcast("ゲームの準備を開始しました。");
 	}
 
 }

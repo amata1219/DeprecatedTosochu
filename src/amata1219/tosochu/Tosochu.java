@@ -12,13 +12,11 @@ import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
 import amata1219.tosochu.command.GameEndCommand;
 import amata1219.tosochu.command.GameStartCommand;
-import amata1219.tosochu.command.HunterRandomSelectCommand;
-import amata1219.tosochu.command.MapLoadCommand;
-import amata1219.tosochu.command.MapSettingsReloadCommand;
-import amata1219.tosochu.command.MapUnloadCommand;
+import amata1219.tosochu.command.HunterSelectRandomCommand;
+import amata1219.tosochu.command.MapMoveCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
-import amata1219.tosochu.playerdata.PlayerData;
+import amata1219.tosochu.game.TosoGameListener;
 import amata1219.tosochu.storage.MapSettingsStorage;
 import amata1219.tosochu.storage.PlayerDataStorage;
 
@@ -36,7 +34,8 @@ public class Tosochu extends JavaPlugin {
 	private MapSettingsStorage mapSettingsStorage;
 	private PlayerDataStorage playerDataStorage;
 
-	public final GameLoader gameLoader = new GameLoader();
+	public WorldLoader worldLoader;
+	public GameLoader gameLoader;
 
 	private Config mainConfig;
 	private Config messagesConfig;
@@ -60,29 +59,40 @@ public class Tosochu extends JavaPlugin {
 		//マップ設定のストレージをロードする
 		mapSettingsStorage = MapSettingsStorage.load();
 
+		worldLoader = new WorldLoader();
+		gameLoader = new GameLoader();
+
 		//プレイヤーデータのストレージをロードする
 		playerDataStorage = PlayerDataStorage.load();
 
 		//コマンドを登録する
 		registerCommands(
+			new WorldTeleportCommand(),
 			new GameStartCommand(),
 			new GameEndCommand(),
-			new WorldTeleportCommand(),
-			new MapLoadCommand(),
-			new MapUnloadCommand(),
-			new HunterRandomSelectCommand(),
-			new MapSettingsReloadCommand()
+			new HunterSelectRandomCommand(),
+			new MapMoveCommand()
 		);
+
+		/*
+		 * start
+		 * end
+		 * hsr
+		 * join
+		 * leave
+		 * opgame
+		 * mode
+		 *
+		 * jail
+		 * rp
+		 * szn
+		 */
 
 		//イベントリスナを登録する
 		registerListeners(
-			new GameListener()
+			playerDataStorage,
+			new TosoGameListener()
 		);
-
-		for(Player player : getServer().getOnlinePlayers()){
-			if(playerDataStorage.isExist(player))
-				playerDataStorage.add(new PlayerData(player.getUniqueId()));
-		}
 	}
 
 	@Override

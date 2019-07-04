@@ -20,12 +20,8 @@ public class MapSettings extends Config {
 		super(file);
 	}
 
-	public String getWorldName(){
-		return getName();
-	}
-
 	public World getWorld(){
-		return Bukkit.getWorld(getWorldName());
+		return Bukkit.getWorld(pureName);
 	}
 
 	public int getPreparationTime(){
@@ -177,9 +173,9 @@ public class MapSettings extends Config {
 			set("Jail spawn locations." + entry.getKey(), entry.getValue().toString());
 	}
 
-	public int[] getFallImpact(){
+	public int[] getLevelsOfSlownessEffectAppliedWhenPlayerLands(){
 		int[] levels = new int[256];
-		ConfigurationSection section = get().getConfigurationSection("Fall impact");
+		ConfigurationSection section = get().getConfigurationSection("Levels of slowness effect applied when player lands");
 		for(String key : section.getKeys(false))
 			levels[Integer.valueOf(key) - 1] = section.getInt(key);
 
@@ -193,22 +189,6 @@ public class MapSettings extends Config {
 		}
 
 		return levels;
-	}
-
-	public int getNumberOfFirstRequiredHunters(){
-		return getInt("Number of first required hunters");
-	}
-
-	public void setNumberOfFirstRequiredHunters(int hunters){
-		set("Number of first required hunters", hunters);
-	}
-
-	public int getHunterSpeedLevel(){
-		return getInt("Level of speed effect that gave to hunter");
-	}
-
-	public void setHunterSpeedLevel(int level){
-		set("Level of speed effect that gave to hunter", level);
 	}
 
 	public boolean isAlwaysDisplayScoreboard(){

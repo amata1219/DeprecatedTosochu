@@ -1,16 +1,16 @@
 package amata1219.tosochu.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
+import amata1219.tosochu.GameLoader;
 import amata1219.tosochu.Tosochu;
-import amata1219.tosochu.location.ImmutableLocation;
+import amata1219.tosochu.WorldLoader;
 import amata1219.tosochu.playerdata.Permission;
-import amata1219.tosochu.storage.MapSettingsStorage;
 
 public class MapMoveCommand implements Command {
+
+	private final GameLoader gameLoader = Tosochu.getPlugin().gameLoader;
+	private final WorldLoader worldLoader = Tosochu.getPlugin().worldLoader;
 
 	@Override
 	public String getName() {
@@ -24,36 +24,22 @@ public class MapMoveCommand implements Command {
 
 	@Override
 	public void onCommand(Player sender, Args args) {
+		//mapmove mapname
+		if(!args.hasNext()){
+			warn(sender, "移動先のマップを指定して下さい。");
+			return;
+		}
+
 		String worldName = args.next();
-		if(Bukkit.getWorld(worldName) != null){
-			warn(sender, "指定されたマップは既にロードされています。");
+		if(!worldLoader.canLoad(worldName)){
+			warn(sender, "指定されたマップは存在しません。");
 			return;
 		}
 
-		MapSettingsStorage storage = Tosochu.getPlugin().getMapSettingsStorage();
-		if(!storage.isSettingsExist(worldName)){
-			warn(sender, "指定されたマップ(" + worldName + ")は設定ファイルが存在しないためロード出来ません。");
-			return;
-		}
+		worldLoader.move(sender.getWorld().getName(), worldName);
+		info(sender, "元いたマップはアンロードし、指定されたマップをロードしました。");
 
-		//ワールドをロードする
-		World world = new WorldCreator(worldName).createWorld();
-
-		World from = sender.getWorld();
-
-		//全プレイヤーを初期スポーン地点にテレポートさせる
-		ImmutableLocation location = storage.get(worldName).getFirstSpawnLocation();
-		for(Player player : Bukkit.getOnlinePlayers())
-			location.teleport(world, player);
-
-		info(sender, "指定されたマップ(" + worldName + ")をロードしました。");
-
-		if(!storage.isSettingsExist(from))
-			return;
-
-		Bukkit.unloadWorld(from, false);
-
-		info(sender, "元いたマップ(" + from.getName() + ")をアンロードしました。");
+		gameLoader.load(Tosochu.getPlugin().getMapSettingsStorage().getMapSettings(worldLoader.getLoadedWorld()));
 	}
 
 }

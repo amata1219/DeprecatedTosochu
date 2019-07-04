@@ -4,15 +4,20 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import amata1219.tosochu.config.Config;
 import amata1219.tosochu.playerdata.Permission;
 import amata1219.tosochu.playerdata.PlayerData;
 
-public class PlayerDataStorage {
+public class PlayerDataStorage implements Listener {
 
 	private final Config config = new Config("player_data.yml");
 	private final HashMap<UUID, PlayerData> storage = new HashMap<>();
@@ -33,7 +38,13 @@ public class PlayerDataStorage {
 									section.getInt("Number of wins"),
 									section.getInt("Number of times became hunter")
 								);
-			add(data);
+			storage.put(data.uuid, data);
+		}
+
+		for(Player player : Bukkit.getOnlinePlayers()){
+			UUID uuid = player.getUniqueId();
+			if(!storage.containsKey(uuid))
+				storage.put(uuid, new PlayerData(uuid));
 		}
 	}
 
@@ -43,13 +54,6 @@ public class PlayerDataStorage {
 
 	public PlayerData get(UUID uuid){
 		return storage.get(uuid);
-	}
-
-	public void add(PlayerData data){
-		if(storage.containsKey(data.uuid))
-			new IllegalArgumentException("The data already exists");
-		else
-			storage.put(data.uuid, data);
 	}
 
 	public boolean isExist(Player player){
@@ -71,6 +75,13 @@ public class PlayerDataStorage {
 			file.set(uuid + ".Number of times became hunter", data.getNumberOfTimesThatBecameHunter());
 		}
 		config.update();
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onFirstJoin(PlayerJoinEvent event){
+		UUID uuid = event.getPlayer().getUniqueId();
+		if(!storage.containsKey(uuid))
+			storage.put(uuid, new PlayerData(uuid));
 	}
 
 }

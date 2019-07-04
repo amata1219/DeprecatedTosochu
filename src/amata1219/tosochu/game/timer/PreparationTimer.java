@@ -1,5 +1,7 @@
 package amata1219.tosochu.game.timer;
 
+import org.bukkit.ChatColor;
+
 import amata1219.tosochu.game.GameAPI;
 
 public class PreparationTimer extends Timer {
@@ -18,6 +20,8 @@ public class PreparationTimer extends Timer {
 
 		//ゲームを開始する
 		game.setTimer(new GameTimer(game));
+
+		game.broadcastTitle(ChatColor.DARK_RED + "" + ChatColor.BOLD + "逃走中スタート！", 0, 50, 0);
 	}
 
 }

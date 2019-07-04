@@ -1,14 +1,15 @@
 package amata1219.tosochu.command;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import amata1219.tosochu.GameLoader;
 import amata1219.tosochu.Tosochu;
+import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.playerdata.Permission;
 
 public class GameEndCommand implements Command {
 
-	private final Tosochu plugin = Tosochu.getPlugin();
+	private final GameLoader gameLoader = Tosochu.getPlugin().gameLoader;
 
 	@Override
 	public String getName() {
@@ -16,19 +17,16 @@ public class GameEndCommand implements Command {
 	}
 
 	@Override
-	public Permission getPermission(){
+	public Permission getPermission() {
 		return Permission.ADMINISTRATOR;
 	}
 
 	@Override
 	public void onCommand(Player sender, Args args) {
-		if(!plugin.isGamePlaying()){
-			sender.sendMessage(ChatColor.RED + "現在ゲームが行われていないため実行出来ません。");
-			return;
-		}
-
-		plugin.getGame().end();
-		sender.sendMessage(ChatColor.AQUA + "ゲームを強制終了しました。");
+		gameLoader.unload();
+		MapSettings settings = gameLoader.getGame().getLoadedMapSettings();
+		gameLoader.load(settings);
+		info(sender, "ゲームを強制終了しました。");
 	}
 
 }

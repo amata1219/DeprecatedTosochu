@@ -17,23 +17,48 @@ public class StatesDisplayer {
 	private final GameAPI game;
 	private final Player player;
 
-	private final StatesScoreboard board;
+	private StatesScoreboard board;
 
-	public boolean useActionBar;
+	private boolean actionBarMode;
 
 	//アクションバーのテキスト(messages.ymlで設定可能)
-	//経過時間:15:00 　金額:210,000円　逃走者の数:30人　（←自分の役職に対する人数）
+	//経過時間:15:00　金額:210,000円　逃走者の数:30人　（←自分の役職に対する人数）
 
 	public StatesDisplayer(GameAPI game, Player player){
 		this.game = game;
 		this.player = player;
 
-		board = game.isAdiministrator(player) ? new AdministratorStatesScoreboard(game, player) : new NormalPlayerStatesScoreboard(game, player);
+		board = new NormalPlayerStatesScoreboard(game, player);
+
+		board.setDisplay(true);
+	}
+
+	public boolean isAdministratorMode(){
+		return board instanceof AdministratorStatesScoreboard;
+	}
+
+	public void setAdiministratorMode(boolean administratorMode){
+		if(administratorMode == isAdministratorMode())
+			return;
+
+		board = administratorMode ? new AdministratorStatesScoreboard(game, player) : new NormalPlayerStatesScoreboard(game, player);
+
+		//表示を更新する
+		board.setDisplay(true);
+	}
+
+	public void setActionBarMode(boolean actionBarMode){
+		if(this.actionBarMode == actionBarMode)
+			return;
+
+		this.actionBarMode = actionBarMode;
+
+		board.setDisplay(!actionBarMode);
 	}
 
 	public void update(boolean byTimer){
 		if(byTimer){
-			if(useActionBar){
+			if(actionBarMode){
 				Profession profession = game.getProfession(player);
 				player.spigot().sendMessage(
 					ChatMessageType.ACTION_BAR,

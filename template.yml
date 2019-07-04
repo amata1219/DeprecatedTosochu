@@ -1,7 +1,7 @@
-'Preparation time': 30
+'Preparation time': "00:30"
 #準備時間: 秒数
 
-'Time limit': 1800
+'Time limit': "30:00"
 #制限時間: 秒数
 
 Dfficulty: EASY
@@ -46,19 +46,13 @@ Dfficulty: EASY
 #牢獄のスポーン地点:
 #  - x,y,z
 
-'Fall impact':
+'Levels of slowness effect applied when player lands':
   6: 0
   10: 1
   14: 2
   18: 3
 #着地時に付与される移動速度低下のレベル設定
 #落下距離: レベル
-
-'Number of first required hunters': 3
-#ゲームの準備開始時に募集するハンターの人数
-
-'Level of speed effect that gave to hunter': 2
-#ハンターに付与される移動速度上昇のレベル
 
 'Always display scoreboard': true
 #常時スコアボードを表示するかどうか(true=常時表示、false=本を持った時だけ)

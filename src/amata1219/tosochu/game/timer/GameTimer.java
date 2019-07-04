@@ -14,9 +14,11 @@ public class GameTimer extends Timer {
 	public void execute(){
 		//賞金を与える
 		for(Player runaway : game.getRunaways())
-			game.depositMoney(runaway, game.getLoadedMapSettings().getUnitPriceOfPrizeMoney(game.getDifficulty(runaway)));
-		
-		
+			game.depositMoney(runaway, game.getUnitPriceOfPrizeMoney(game.getDifficulty(runaway)));
+
+		for(Player player : game.getOnlinePlayers()){
+			game.getStatesDisplayer(player).update(true);
+		}
 	}
 
 	@Override

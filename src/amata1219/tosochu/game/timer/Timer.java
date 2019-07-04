@@ -19,7 +19,7 @@ public abstract class Timer extends BukkitRunnable {
 	@Override
 	public final void run(){
 		if(remainingTime > 0){
-			for(Player player : game.getPlayers())
+			for(Player player : game.getOnlinePlayers())
 				player.setLevel(remainingTime);
 
 			//残り時間が10の倍数又は5秒以下であれば全体に告知する
