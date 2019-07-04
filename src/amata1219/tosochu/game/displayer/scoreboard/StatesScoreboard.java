@@ -51,10 +51,12 @@ public abstract class StatesScoreboard {
 			player.setScoreboard(display ? board : manager.getNewScoreboard());
 	}
 
+	public abstract void updateProfession();
+
 	public abstract void updateStates();
 
 	//指定されたスコアのテキストを書き換える
-	public void updateText(int score, String text){
+	protected void updateText(int score, String text){
 		//スコアが範囲外であればエラーを投げる
 		if(score < 0 || 14 < score)
 			throw new IllegalArgumentException("Score must be in the range 0 to 15");
@@ -67,12 +69,12 @@ public abstract class StatesScoreboard {
 	}
 
 	protected void initialize(String... texts){
-		if(texts.length > 15)
+		if(texts.length > 14)
 			throw new IllegalArgumentException("Texts length be 15 or less");
 
 		//配列の値を前から順にボードの上から下にセットしていく
 		for(int i = 0; i < texts.length; i++)
-			set(15 - i, texts[i]);
+			set(14 - i, texts[i]);
 	}
 
 	protected void set(int score, String text){

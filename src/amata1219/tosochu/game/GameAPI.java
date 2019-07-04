@@ -40,13 +40,15 @@ public interface GameAPI {
 		return getTimer() instanceof GameTimer;
 	}
 
-	default boolean isEnded(){
-		return false;
-	}
+	boolean isEnded();
 
 	Timer getTimer();
 
 	void setTimer(Timer timer);
+
+	default int getElapsedTime(){
+		return getTimer() == null ? 0 : getTimer().getElapsedTime();
+	}
 
 	MapSettings getLoadedMapSettings();
 
@@ -69,6 +71,8 @@ public interface GameAPI {
 	List<Player> getPlayers();
 
 	List<Player> getQuittedPlayers();
+
+	List<Player> getAdiministrators();
 
 	List<Player> getPlayersByProfession(Profession profession);
 
@@ -102,7 +106,11 @@ public interface GameAPI {
 		return getQuittedPlayers().contains(player);
 	}
 
-	default Profession gerProfession(Player player){
+	default boolean isAdiministrator(Player player){
+		return getAdiministrators().contains(player);
+	}
+
+	default Profession getProfession(Player player){
 		if(isRunaway(player))
 			return Profession.RUNAWAY;
 		else if(isDropout(player))

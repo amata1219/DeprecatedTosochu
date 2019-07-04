@@ -3,26 +3,26 @@ package amata1219.tosochu.game.displayer.scoreboard;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.game.GameAPI;
-import amata1219.tosochu.text.MoneyTextFormatter;
+import amata1219.tosochu.text.MoneyFormatter;
 
 public class NormalPlayerStatesScoreboard extends StatesScoreboard {
 
 	/*
 	 * -Run For Money- Title
-		逃走中		13
-					12
-		あなたの役職11
-		＜役職＞	10
-					9
-		現在の賞金	8
-		賞金		7
-		（０円/秒）	6
-					5
-		難易度		4
-		ノーマル	3
-					2
-		参加人数	1
-		<人数>		0
+		逃走中		14
+					13
+		あなたの役職12
+		＜役職＞	11
+					10
+		現在の賞金	9
+		賞金		8
+		（０円/秒）	7
+					6
+		難易度		5
+		ノーマル	4
+					3
+		参加人数	2
+		<人数>		1
 	 */
 
 	public NormalPlayerStatesScoreboard(GameAPI game, Player player) {
@@ -48,11 +48,20 @@ public class NormalPlayerStatesScoreboard extends StatesScoreboard {
 	}
 
 	@Override
+	public void updateProfession() {
+		updateText(11, game.getProfession(player).getDisplayName());
+	}
+
+	@Override
 	public void updateStates() {
-		updateText(10, game.gerProfession(player).toDisplayName());
-		updateText(7, MoneyTextFormatter.format(game.getMoney(player)));
-		updateText(6, "(" + MoneyTextFormatter.format(game.getLoadedMapSettings().getUnitPriceOfPrizeMoney(game.getDifficulty(player))) + " / 秒)");
-		updateText(0, String.valueOf(game.getPlayers().size()));
+		//賞金の更新
+		updateText(8, MoneyFormatter.format(game.getMoney(player)));
+
+		//賞金単価の更新
+		updateText(7, "(" + MoneyFormatter.format(game.getLoadedMapSettings().getUnitPriceOfPrizeMoney(game.getDifficulty(player))) + " / 秒)");
+
+		//参加人数の更新
+		updateText(1, String.valueOf(game.getPlayers().size()));
 	}
 
 }

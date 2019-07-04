@@ -11,7 +11,7 @@ public enum Profession {
 	REPORTER,
 	SPECTATOR;
 
-	public String toDisplayName(){
+	public String getDisplayName(){
 		return Tosochu.getPlugin()
 				.getMessagesConfig()
 				.get()
