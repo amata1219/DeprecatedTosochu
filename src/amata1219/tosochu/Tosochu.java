@@ -10,10 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
-import amata1219.tosochu.command.GameEndCommand;
-import amata1219.tosochu.command.GameStartCommand;
-import amata1219.tosochu.command.HunterSelectRandomCommand;
-import amata1219.tosochu.command.MapMoveCommand;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
 import amata1219.tosochu.game.TosoGameListener;
@@ -33,9 +29,6 @@ public class Tosochu extends JavaPlugin {
 
 	private MapSettingsStorage mapSettingsStorage;
 	private PlayerDataStorage playerDataStorage;
-
-	public WorldLoader worldLoader;
-	public GameLoader gameLoader;
 
 	private Config mainConfig;
 	private Config messagesConfig;
@@ -59,19 +52,12 @@ public class Tosochu extends JavaPlugin {
 		//マップ設定のストレージをロードする
 		mapSettingsStorage = MapSettingsStorage.load();
 
-		worldLoader = new WorldLoader();
-		gameLoader = new GameLoader();
-
 		//プレイヤーデータのストレージをロードする
 		playerDataStorage = PlayerDataStorage.load();
 
 		//コマンドを登録する
 		registerCommands(
-			new WorldTeleportCommand(),
-			new GameStartCommand(),
-			new GameEndCommand(),
-			new HunterSelectRandomCommand(),
-			new MapMoveCommand()
+			new WorldTeleportCommand()
 		);
 
 		/*

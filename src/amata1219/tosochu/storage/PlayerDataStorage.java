@@ -19,11 +19,17 @@ import amata1219.tosochu.playerdata.PlayerData;
 
 public class PlayerDataStorage implements Listener {
 
+	private static PlayerDataStorage storage;
+
 	private final Config config = new Config("player_data.yml");
-	private final HashMap<UUID, PlayerData> storage = new HashMap<>();
+	private final HashMap<UUID, PlayerData> dataMap = new HashMap<>();
 
 	public static PlayerDataStorage load(){
-		return new PlayerDataStorage();
+		return storage = new PlayerDataStorage();
+	}
+
+	public static PlayerDataStorage getStorage(){
+		return storage;
 	}
 
 	private PlayerDataStorage(){
@@ -38,13 +44,13 @@ public class PlayerDataStorage implements Listener {
 									section.getInt("Number of wins"),
 									section.getInt("Number of times became hunter")
 								);
-			storage.put(data.uuid, data);
+			dataMap.put(data.uuid, data);
 		}
 
 		for(Player player : Bukkit.getOnlinePlayers()){
 			UUID uuid = player.getUniqueId();
-			if(!storage.containsKey(uuid))
-				storage.put(uuid, new PlayerData(uuid));
+			if(!dataMap.containsKey(uuid))
+				dataMap.put(uuid, new PlayerData(uuid));
 		}
 	}
 
@@ -53,7 +59,7 @@ public class PlayerDataStorage implements Listener {
 	}
 
 	public PlayerData get(UUID uuid){
-		return storage.get(uuid);
+		return dataMap.get(uuid);
 	}
 
 	public boolean isExist(Player player){
@@ -61,12 +67,12 @@ public class PlayerDataStorage implements Listener {
 	}
 
 	public boolean isExist(UUID uuid){
-		return storage.containsKey(uuid);
+		return dataMap.containsKey(uuid);
 	}
 
 	public void saveAll(){
 		FileConfiguration file = config.get();
-		for(Entry<UUID, PlayerData> entry : storage.entrySet()){
+		for(Entry<UUID, PlayerData> entry : dataMap.entrySet()){
 			String uuid = entry.getKey().toString();
 			PlayerData data = entry.getValue();
 			file.set(uuid + ".Permission", data.getPermission().toString());
@@ -80,8 +86,8 @@ public class PlayerDataStorage implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onFirstJoin(PlayerJoinEvent event){
 		UUID uuid = event.getPlayer().getUniqueId();
-		if(!storage.containsKey(uuid))
-			storage.put(uuid, new PlayerData(uuid));
+		if(!dataMap.containsKey(uuid))
+			dataMap.put(uuid, new PlayerData(uuid));
 	}
 
 }

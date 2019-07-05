@@ -10,6 +10,7 @@ import amata1219.tosochu.config.MapSettings;
 
 public class MapSettingsStorage {
 
+	private static MapSettingsStorage storage;
 	private static File folder;
 
 	private final HashMap<String, MapSettings> settings = new HashMap<>();
@@ -22,8 +23,11 @@ public class MapSettingsStorage {
 	}
 
 	public static MapSettingsStorage load(){
-		MapSettingsStorage storage = new MapSettingsStorage();
-		storage.reload();
+		(storage = new MapSettingsStorage()).reload();
+		return storage;
+	}
+
+	public static MapSettingsStorage getStorage(){
 		return storage;
 	}
 
