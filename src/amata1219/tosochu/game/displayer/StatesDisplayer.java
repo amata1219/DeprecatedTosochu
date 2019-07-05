@@ -2,6 +2,7 @@ package amata1219.tosochu.game.displayer;
 
 import org.bukkit.entity.Player;
 
+import amata1219.tosochu.MapLoader;
 import amata1219.tosochu.game.GameAPI;
 import amata1219.tosochu.game.Profession;
 import amata1219.tosochu.game.displayer.scoreboard.AdministratorStatesScoreboard;
@@ -24,8 +25,8 @@ public class StatesDisplayer {
 	//アクションバーのテキスト(messages.ymlで設定可能)
 	//経過時間:15:00　金額:210,000円　逃走者の数:30人　（←自分の役職に対する人数）
 
-	public StatesDisplayer(GameAPI game, Player player){
-		this.game = game;
+	public StatesDisplayer(Player player){
+		this.game = MapLoader.getLoader().getGame();
 		this.player = player;
 
 		board = new NormalPlayerStatesScoreboard(game, player);

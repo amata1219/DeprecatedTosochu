@@ -60,8 +60,6 @@ public interface GameAPI {
 
 	MapSettings getLoadedMapSettings();
 
-	void reloadMapSettings();
-
 	default World getWorld(){
 		return getLoadedMapSettings().getWorld();
 	}
@@ -74,43 +72,29 @@ public interface GameAPI {
 
 	ImmutableLocation getRandomJailLocation();
 
-	int getUnitPriceOfPrizeMoney(Difficulty difficulty);
-
-	void setUnitPriceOfPrizeMoney(Difficulty difficulty, int money);
-
-	List<UUID> getPlayers();
-
-	default List<Player> getOnlinePlayers(){
-		List<Player> players = new ArrayList<>();
-		for(UUID uuid : getPlayers())
-			if(Bukkit.getOfflinePlayer(uuid).isOnline())
-				players.add(Bukkit.getPlayer(uuid));
-		return players;
-	}
+	List<GamePlayer> getPlayers();
 
 	List<UUID> getQuittedPlayers();
 
-	List<UUID> getAdiministrators();
+	List<GamePlayer> getPlayersByProfession(Profession profession);
 
-	List<Player> getPlayersByProfession(Profession profession);
-
-	default List<Player> getRunaways(){
+	default List<GamePlayer> getRunaways(){
 		return getPlayersByProfession(Profession.RUNAWAY);
 	}
 
-	default List<Player> getDropouts(){
+	default List<GamePlayer> getDropouts(){
 		return getPlayersByProfession(Profession.DROPOUT);
 	}
 
-	default List<Player> getHunters(){
+	default List<GamePlayer> getHunters(){
 		return getPlayersByProfession(Profession.HUNTER);
 	}
 
-	default List<Player> getReporters(){
+	default List<GamePlayer> getReporters(){
 		return getPlayersByProfession(Profession.REPORTER);
 	}
 
-	default List<Player> getSpectators(){
+	default List<GamePlayer> getSpectators(){
 		return getPlayersByProfession(Profession.SPECTATOR);
 	}
 
@@ -122,10 +106,6 @@ public interface GameAPI {
 
 	default boolean isQuitted(Player player){
 		return getQuittedPlayers().contains(player.getUniqueId());
-	}
-
-	default boolean isAdiministrator(Player player){
-		return getAdiministrators().contains(player.getUniqueId());
 	}
 
 	default Profession getProfession(Player player){

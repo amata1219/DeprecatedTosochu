@@ -28,36 +28,20 @@ public class TosoGame implements GameAPI {
 
 	private Timer timer;
 
-	private int[] unitPriceOfPrizeMoney = new int[Difficulty.values().length];
-	private int[] levelsOfSlownessEffect;
 	private LocationRandomSelector respawnLocationSelector, jailLocationSelector;
 
-	private final List<UUID> players = new ArrayList<>();
+	private final Map<Profession, List<GamePlayer>> players = new HashMap<>();
 
-	private final Map<Profession, List<Player>> playersByProfession = new HashMap<>();
-
-	private final List<UUID> administrators = new ArrayList<>();
-	private final List<UUID> spectators = new ArrayList<>();
-	private final Map<UUID, Long> dropouts = new HashMap<>();
-	private final Map<UUID, Long> quitted = new HashMap<>();
+	private final List<GamePlayer> quittedPlayers = new ArrayList<>();
 
 	private int recruitmentNumberOfHunters;
-	private final List<Player> applicantsForHunterLottery = new ArrayList<>();
-
-	private final Map<Player, Difficulty> difficulties = new HashMap<>();
-	private final Map<Player, Integer> moneyMap = new HashMap<>();
-	private final Map<Player, StatesDisplayer> statesDisplayers = new HashMap<>();
+	private final List<GamePlayer> applicantsForHunterLottery = new ArrayList<>();
 
 	public TosoGame(MapSettings settings){
 		this.settings = settings;
 
 		for(Profession profession : Profession.values())
-			playersByProfession.put(profession, new ArrayList<>());
-
-		for(Difficulty difficulty : Difficulty.values())
-			unitPriceOfPrizeMoney[difficulty.ordinal()] = settings.getUnitPriceOfPrizeMoney(difficulty);
-
-		levelsOfSlownessEffect = settings.getLevelsOfSlownessEffectAppliedWhenPlayerLands();
+			players.put(profession, new ArrayList<>());
 
 		respawnLocationSelector = new LocationRandomSelector(settings.getRunawayRespawnLocations());
 		jailLocationSelector = new LocationRandomSelector(settings.getJailSpawnLocations());
@@ -105,10 +89,6 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public void reloadMapSettings() {
-	}
-
-	@Override
 	public ImmutableLocation getRandomRespawnLocation() {
 		return respawnLocationSelector.select();
 	}
@@ -119,18 +99,10 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public int getUnitPriceOfPrizeMoney(Difficulty difficulty) {
-		return unitPriceOfPrizeMoney[difficulty.ordinal()];
-	}
-
-	@Override
-	public void setUnitPriceOfPrizeMoney(Difficulty difficulty, int money) {
-		unitPriceOfPrizeMoney[difficulty.ordinal()] = money;
-	}
-
-	@Override
-	public List<UUID> getPlayers() {
-		return players;
+	public List<GamePlayer> getPlayers() {
+		List<GamePlayer> list = new ArrayList<>();
+		players.values().forEach(players -> list.addAll(players));
+		return list;
 	}
 
 	@Override
@@ -139,13 +111,8 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public List<UUID> getAdiministrators() {
-		return administrators;
-	}
-
-	@Override
-	public List<Player> getPlayersByProfession(Profession profession) {
-		return playersByProfession.get(profession);
+	public List<GamePlayer> getPlayersByProfession(Profession profession) {
+		return players.get(profession);
 	}
 
 	@Override

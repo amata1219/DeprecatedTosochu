@@ -9,6 +9,7 @@ public enum Profession {
 	DROPOUT,
 	HUNTER,
 	REPORTER,
+	SURVIVOR,
 	SPECTATOR;
 
 	public String getDisplayName(){

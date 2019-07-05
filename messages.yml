@@ -1,7 +1,8 @@
 Prefix: "§7[§4逃走中§7]§r "
 ProfessionNames:
   Runaway: "逃走者"
-  Dropout: "脱落者"
+  Dropout: "牢獄者"
   Hunter: "ハンター"
   Reporter: "通報部隊"
+  Survivor: "生存者"
   Spectator: "観戦者"
