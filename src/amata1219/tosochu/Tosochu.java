@@ -12,7 +12,6 @@ import amata1219.tosochu.command.Args;
 import amata1219.tosochu.command.Command;
 import amata1219.tosochu.command.WorldTeleportCommand;
 import amata1219.tosochu.config.Config;
-import amata1219.tosochu.game.TosoGameListener;
 import amata1219.tosochu.storage.MapSettingsStorage;
 import amata1219.tosochu.storage.PlayerDataStorage;
 
@@ -76,8 +75,7 @@ public class Tosochu extends JavaPlugin {
 
 		//イベントリスナを登録する
 		registerListeners(
-			playerDataStorage,
-			new TosoGameListener()
+			playerDataStorage
 		);
 	}
 

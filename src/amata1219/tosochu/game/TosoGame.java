@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -30,12 +31,11 @@ public class TosoGame implements GameAPI {
 
 	private LocationRandomSelector respawnLocationSelector, jailLocationSelector;
 
-	private final Map<Profession, List<GamePlayer>> players = new HashMap<>();
-
-	private final List<GamePlayer> quittedPlayers = new ArrayList<>();
+	private final Map<UUID, GamePlayer> gamePlayers = new HashMap<>();
+	private final Map<Profession, List<Player>> players = new HashMap<>();
 
 	private int recruitmentNumberOfHunters;
-	private final List<GamePlayer> applicantsForHunterLottery = new ArrayList<>();
+	private final List<Player> applicantsForHunterLottery = new ArrayList<>();
 
 	public TosoGame(MapSettings settings){
 		this.settings = settings;
@@ -56,7 +56,7 @@ public class TosoGame implements GameAPI {
 
 		setTimer(new PreparationTimer(this));
 
-		for(Player player : getOnlinePlayers())
+		for(Player player : getGamePlayers())
 			join(player);
 
 		/*
@@ -99,50 +99,26 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public List<GamePlayer> getPlayers() {
-		List<GamePlayer> list = new ArrayList<>();
-		players.values().forEach(players -> list.addAll(players));
-		return list;
+	public List<GamePlayer> getGamePlayers() {
+		return new ArrayList<>(gamePlayers.values());
 	}
 
 	@Override
-	public List<UUID> getQuittedPlayers() {
-		return new ArrayList<>(quitted.keySet());
+	public List<GamePlayer> getQuittedPlayers() {
+		return getGamePlayers()
+				.stream()
+				.filter(GamePlayer::isQuitted)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<GamePlayer> getPlayersByProfession(Profession profession) {
+	public List<Player> getPlayersByProfession(Profession profession) {
 		return players.get(profession);
 	}
 
 	@Override
 	public List<Player> getApplicantsForHunterLottery() {
 		return applicantsForHunterLottery;
-	}
-
-	@Override
-	public Difficulty getDifficulty(Player player) {
-		return difficulties.get(player);
-	}
-
-	@Override
-	public void setDifficulty(Player player, Difficulty difficulty) {
-		difficulties.put(player, difficulty);
-	}
-
-	@Override
-	public int getMoney(Player player) {
-		return moneyMap.get(player);
-	}
-
-	@Override
-	public void setMoney(Player player, int money) {
-		moneyMap.put(player, getMoney(player) + money);
-	}
-
-	@Override
-	public StatesDisplayer getStatesDisplayer(Player player) {
-		return statesDisplayers.get(player);
 	}
 
 	@Override

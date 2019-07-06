@@ -1,17 +1,14 @@
 package amata1219.tosochu.game;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.config.MapSettings;
-import amata1219.tosochu.game.displayer.StatesDisplayer;
 import amata1219.tosochu.game.timer.GameTimer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
@@ -72,41 +69,45 @@ public interface GameAPI {
 
 	ImmutableLocation getRandomJailLocation();
 
-	List<GamePlayer> getPlayers();
+	List<GamePlayer> getGamePlayers();
 
-	List<UUID> getQuittedPlayers();
+	default List<Player> getOnlinePlayers(){
+		return getGamePlayers()
+				.stream()
+				.filter(GamePlayer::isOnline)
+				.map(GamePlayer::getPlayer)
+				.collect(Collectors.toList());
+	}
 
-	List<GamePlayer> getPlayersByProfession(Profession profession);
+	List<GamePlayer> getQuittedPlayers();
 
-	default List<GamePlayer> getRunaways(){
+	List<Player> getPlayersByProfession(Profession profession);
+
+	default List<Player> getRunaways(){
 		return getPlayersByProfession(Profession.RUNAWAY);
 	}
 
-	default List<GamePlayer> getDropouts(){
+	default List<Player> getDropouts(){
 		return getPlayersByProfession(Profession.DROPOUT);
 	}
 
-	default List<GamePlayer> getHunters(){
+	default List<Player> getHunters(){
 		return getPlayersByProfession(Profession.HUNTER);
 	}
 
-	default List<GamePlayer> getReporters(){
+	default List<Player> getReporters(){
 		return getPlayersByProfession(Profession.REPORTER);
 	}
 
-	default List<GamePlayer> getSpectators(){
+	default List<Player> getSpectators(){
 		return getPlayersByProfession(Profession.SPECTATOR);
 	}
 
 	List<Player> getApplicantsForHunterLottery();
 
-	default boolean isJoined(Player player){
-		return getPlayers().contains(player);
-	}
+	 boolean isJoined(Player player);
 
-	default boolean isQuitted(Player player){
-		return getQuittedPlayers().contains(player.getUniqueId());
-	}
+	boolean isQuitted(Player player);
 
 	default Profession getProfession(Player player){
 		if(isRunaway(player))
@@ -145,24 +146,6 @@ public interface GameAPI {
 		return getApplicantsForHunterLottery().contains(player);
 	}
 
-	Difficulty getDifficulty(Player player);
-
-	void setDifficulty(Player player, Difficulty difficulty);
-
-	int getMoney(Player player);
-
-	void setMoney(Player player, int money);
-
-	default void depositMoney(Player player, int money){
-		setMoney(player, getMoney(player) + money);
-	}
-
-	default void withdrawMoney(Player player, int money){
-		setMoney(player, Math.min(getMoney(player) - money, 0));
-	}
-
-	StatesDisplayer getStatesDisplayer(Player player);
-
 	void join(Player player);
 
 	void quit(Player player);
@@ -196,8 +179,7 @@ public interface GameAPI {
 
 	default void broadcastMessage(String message){
 		String text = PREFIX + message;
-		for(Player player : getOnlinePlayers())
-			player.sendMessage(text);
+		getOnlinePlayers().forEach(player -> player.sendMessage(text));
 	}
 
 	default void broadcastTitle(String title, int fadeIn, int stay, int fadeOut){
@@ -205,13 +187,11 @@ public interface GameAPI {
 	}
 
 	default void broadcastTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut){
-		for(Player player : getOnlinePlayers())
-			player.sendTitle(title, subTitle, fadeIn, stay, fadeOut);
+		getOnlinePlayers().forEach(player -> player.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
 	}
 
 	default void broadcastSound(Sound sound, float volume, float pitch){
-		for(Player player : getOnlinePlayers())
-			player.playSound(player.getLocation(), sound, volume, pitch);
+		getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), sound, volume, pitch));
 	}
 
 }

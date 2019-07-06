@@ -48,6 +48,10 @@ public class StatesDisplayer {
 		board.setDisplay(true);
 	}
 
+	public boolean isActionBarMode(){
+		return actionBarMode;
+	}
+
 	public void setActionBarMode(boolean actionBarMode){
 		if(this.actionBarMode == actionBarMode)
 			return;
