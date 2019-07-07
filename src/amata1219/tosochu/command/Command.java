@@ -1,24 +1,21 @@
 package amata1219.tosochu.command;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import amata1219.tosochu.playerdata.Permission;
 
 public interface Command {
 
-	String getName();
-
-	Permission getPermission();
-
-	void onCommand(Player sender, Args args);
-
-	default void info(Player sender, String message){
-		sender.sendMessage(ChatColor.GRAY + message);
+	default Permission getPermission(){
+		return Permission.ADMINISTRATOR;
 	}
 
-	default void warn(Player sender, String message){
-		sender.sendMessage(ChatColor.RED + message);
+	void onCommand(Sender sender, Arguments args);
+
+	default boolean blockNonPlayer(Sender sender){
+		if(sender.isPlayerCommandSender())
+			return false;
+
+		sender.warn("ゲーム内から実行して下さい。");
+		return true;
 	}
 
 }

@@ -8,9 +8,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import amata1219.tosochu.command.Args;
+import amata1219.tosochu.command.Arguments;
 import amata1219.tosochu.command.Command;
-import amata1219.tosochu.command.WorldTeleportCommand;
+import amata1219.tosochu.command.Sender;
 import amata1219.tosochu.config.Config;
 import amata1219.tosochu.storage.MapSettingsStorage;
 import amata1219.tosochu.storage.PlayerDataStorage;
@@ -26,8 +26,8 @@ public class Tosochu extends JavaPlugin {
 
 	private final HashMap<String, Command> commands = new HashMap<>();
 
-	private MapSettingsStorage mapSettingsStorage;
-	private PlayerDataStorage playerDataStorage;
+	private MapSettingsStorage settingStorage;
+	private PlayerDataStorage playerStorage;
 
 	private Config mainConfig;
 	private Config messagesConfig;
@@ -49,14 +49,14 @@ public class Tosochu extends JavaPlugin {
 		MapSettingsStorage.mkdir();
 
 		//マップ設定のストレージをロードする
-		mapSettingsStorage = MapSettingsStorage.load();
+		settingStorage = MapSettingsStorage.load();
 
 		//プレイヤーデータのストレージをロードする
-		playerDataStorage = PlayerDataStorage.load();
+		playerStorage = PlayerDataStorage.load();
 
 		//コマンドを登録する
 		registerCommands(
-			new WorldTeleportCommand()
+			//new WorldTeleportCommand()
 		);
 
 		/*
@@ -75,7 +75,7 @@ public class Tosochu extends JavaPlugin {
 
 		//イベントリスナを登録する
 		registerListeners(
-			playerDataStorage
+			playerStorage
 		);
 	}
 
@@ -83,20 +83,19 @@ public class Tosochu extends JavaPlugin {
 	public void onDisable(){
 		HandlerList.unregisterAll((JavaPlugin) this);
 
-		playerDataStorage.saveAll();
+		playerStorage.saveAll();
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, org.bukkit.command.Command input, String label, String[] args){
-		if(!(sender instanceof Player))
+	public boolean onCommand(CommandSender commander, org.bukkit.command.Command input, String label, String[] args){
+		Sender sender = new Sender(commander);
+		Command command = commands.get(input.getName());
+		if(command.blockNonPlayer(sender))
 			return true;
 
-		Player player = (Player) sender;
-		Command command = commands.get(input.getName());
+		if(playerStorage.get((Player) commander).hasPermission(command.getPermission()))
+			command.onCommand(sender, new Arguments(args));
 
-		//コマンドに設定されたパーミッションを持っていればコマンドを実行
-		if(playerDataStorage.get(player).hasPermission(command.getPermission()))
-			command.onCommand(player, new Args(args));
 		return true;
 	}
 
@@ -105,11 +104,11 @@ public class Tosochu extends JavaPlugin {
 	}
 
 	public MapSettingsStorage getMapSettingsStorage(){
-		return mapSettingsStorage;
+		return settingStorage;
 	}
 
 	public PlayerDataStorage getPlayerDataStorage(){
-		return playerDataStorage;
+		return playerStorage;
 	}
 
 	public Config getMainConfig(){
@@ -121,8 +120,11 @@ public class Tosochu extends JavaPlugin {
 	}
 
 	public void registerCommands(Command... commands){
-		for(Command command : commands)
-			this.commands.put(command.getName(), command);
+		for(Command command : commands){
+			String className = command.getClass().getSimpleName();
+			String commandName = className.substring(0, className.length() - 6).toLowerCase();
+			this.commands.put(commandName, command);
+		}
 	}
 
 	public void registerListeners(Listener... listeners){

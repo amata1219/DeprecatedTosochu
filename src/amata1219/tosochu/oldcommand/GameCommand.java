@@ -1,4 +1,4 @@
-package amata1219.tosochu.command;
+package amata1219.tosochu.oldcommand;
 
 import org.bukkit.entity.Player;
 
