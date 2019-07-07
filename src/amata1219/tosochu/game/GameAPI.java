@@ -67,7 +67,7 @@ public interface GameAPI {
 
 	ImmutableLocation getRandomRespawnLocation();
 
-	ImmutableLocation getRandomJailLocation();
+	ImmutableLocation getRandomJailSpawnLocation();
 
 	List<GamePlayer> getGamePlayers();
 
@@ -105,7 +105,7 @@ public interface GameAPI {
 
 	List<Player> getApplicantsForHunterLottery();
 
-	 boolean isJoined(Player player);
+	boolean isJoined(Player player);
 
 	boolean isQuitted(Player player);
 

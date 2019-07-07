@@ -3,7 +3,6 @@ package amata1219.tosochu.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import amata1219.tosochu.game.Difficulty;
 import amata1219.tosochu.location.ImmutableLocation;
+import amata1219.tosochu.location.LocationRandomSelector;
 import amata1219.tosochu.text.TimeFormatter;
 
 public class MapSettings extends Config {
@@ -30,7 +30,9 @@ public class MapSettings extends Config {
 	private ImmutableLocation firstSpawnLocation;
 	private ImmutableLocation hunterSpawnLocation;
 	private Map<Integer, ImmutableLocation> runawayRespawnLocations = new HashMap<>();
+	private LocationRandomSelector runawayRespawnLocationSelector;
 	private Map<Integer, ImmutableLocation> jailSpawnLocations = new HashMap<>();
+	private LocationRandomSelector jailSpawnLocationSelector;
 	private int[] levelsOfSlownessEffectAppliedWhenPlayerLands;
 	private boolean alwaysDisplayScoreboard;
 
@@ -58,10 +60,14 @@ public class MapSettings extends Config {
 		for(String key : sectionOfRunawayRespawnLocations.getKeys(false))
 			runawayRespawnLocations.put(Integer.valueOf(key), ImmutableLocation.at(sectionOfRunawayRespawnLocations.getString(key)));
 
+		runawayRespawnLocationSelector = new LocationRandomSelector(new ArrayList<>(runawayRespawnLocations.values()));
+
 		jailSpawnLocations.clear();
 		ConfigurationSection sectionOfJailSpawnLocations = get().getConfigurationSection("Jail spawn locations");
 		for(String key : sectionOfJailSpawnLocations.getKeys(false))
 			jailSpawnLocations.put(Integer.valueOf(key), ImmutableLocation.at(sectionOfJailSpawnLocations.getString(key)));
+
+		jailSpawnLocationSelector = new LocationRandomSelector(new ArrayList<>(jailSpawnLocations.values()));
 
 		levelsOfSlownessEffectAppliedWhenPlayerLands = new int[256];
 		ConfigurationSection sectionOfLevels = get().getConfigurationSection("Levels of slowness effect applied when player lands");
@@ -184,8 +190,8 @@ public class MapSettings extends Config {
 		set("Hunter spawn location", (hunterSpawnLocation = ImmutableLocation.at(x, y, z)).toString());
 	}
 
-	public List<ImmutableLocation> getRunawayRespawnLocations(){
-		return new ArrayList<>(runawayRespawnLocations.values());
+	public LocationRandomSelector getRunawayRespawnLocationSelector(){
+		return runawayRespawnLocationSelector;
 	}
 
 	public Map<Integer, ImmutableLocation> getRunawayRespawnLocationsMap(){
@@ -198,8 +204,8 @@ public class MapSettings extends Config {
 			set("Runaway respawn locations." + entry.getKey(), entry.getValue().toString());
 	}
 
-	public List<ImmutableLocation> getJailSpawnLocations(){
-		return new ArrayList<>(jailSpawnLocations.values());
+	public LocationRandomSelector getJailSpawnLocations(){
+		return jailSpawnLocationSelector;
 	}
 
 	public void setJailSpawnLocations(Map<Integer, ImmutableLocation> locations){
