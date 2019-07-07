@@ -10,7 +10,8 @@ public enum Profession {
 	HUNTER,
 	REPORTER,
 	SURVIVOR,
-	SPECTATOR;
+	SPECTATOR,
+	NOTHING;
 
 	public String getDisplayName(){
 		return Tosochu.getPlugin()

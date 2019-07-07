@@ -7,19 +7,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.config.MapSettings;
-import amata1219.tosochu.game.displayer.StatesDisplayer;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
 import amata1219.tosochu.location.ImmutableLocation;
-import amata1219.tosochu.location.LocationRandomSelector;
 
 public class TosoGame implements GameAPI {
 
@@ -29,8 +22,8 @@ public class TosoGame implements GameAPI {
 
 	private Timer timer;
 
-	private final Map<UUID, GamePlayer> players = new HashMap<>();
-	private final Map<Profession, List<Player>> gamePlayers = new HashMap<>();
+	private final Map<UUID, GamePlayer> participants = new HashMap<>();
+	private final Map<Profession, List<GamePlayer>> players = new HashMap<>();
 
 	private int recruitmentNumberOfHunters;
 	private final List<Player> applicantsForHunterLottery = new ArrayList<>();
@@ -95,20 +88,12 @@ public class TosoGame implements GameAPI {
 
 	@Override
 	public List<GamePlayer> getGamePlayers() {
-		return new ArrayList<>(players.values());
+		return new ArrayList<>(participants.values());
 	}
 
 	@Override
-	public List<GamePlayer> getQuittedPlayers() {
-		return getGamePlayers()
-				.stream()
-				.filter(GamePlayer::isQuitted)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<Player> getPlayersByProfession(Profession profession) {
-		return gamePlayers.get(profession);
+	public List<GamePlayer> getPlayersByProfession(Profession profession) {
+		return players.get(profession);
 	}
 
 	@Override

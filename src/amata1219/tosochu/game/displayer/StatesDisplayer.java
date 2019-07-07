@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import amata1219.tosochu.MapLoader;
 import amata1219.tosochu.game.GameAPI;
+import amata1219.tosochu.game.GamePlayer;
 import amata1219.tosochu.game.Profession;
 import amata1219.tosochu.game.displayer.scoreboard.AdministratorStatesScoreboard;
 import amata1219.tosochu.game.displayer.scoreboard.NormalPlayerStatesScoreboard;
@@ -16,6 +17,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class StatesDisplayer {
 
 	private final GameAPI game;
+	private final GamePlayer gamePlayer;
 	private final Player player;
 
 	private StatesScoreboard board;
@@ -25,11 +27,12 @@ public class StatesDisplayer {
 	//アクションバーのテキスト(messages.ymlで設定可能)
 	//経過時間:15:00　金額:210,000円　逃走者の数:30人　（←自分の役職に対する人数）
 
-	public StatesDisplayer(Player player){
+	public StatesDisplayer(GamePlayer gamePlayer){
 		this.game = MapLoader.getLoader().getGame();
-		this.player = player;
+		this.gamePlayer = gamePlayer;
+		this.player = gamePlayer.getPlayer();
 
-		board = new NormalPlayerStatesScoreboard(game, player);
+		board = new NormalPlayerStatesScoreboard(game, gamePlayer);
 
 		board.setDisplay(true);
 	}
@@ -42,7 +45,7 @@ public class StatesDisplayer {
 		if(administratorMode == isAdministratorMode())
 			return;
 
-		board = administratorMode ? new AdministratorStatesScoreboard(game, player) : new NormalPlayerStatesScoreboard(game, player);
+		board = administratorMode ? new AdministratorStatesScoreboard(game, gamePlayer) : new NormalPlayerStatesScoreboard(game, gamePlayer);
 
 		//表示を更新する
 		board.setDisplay(true);
@@ -69,7 +72,7 @@ public class StatesDisplayer {
 					ChatMessageType.ACTION_BAR,
 					new TextComponent(
 						"経過時間: " + TimeFormatter.format(game.getElapsedTime())
-						+ "金額: " + MoneyFormatter.format(game.getMoney(player))
+						+ "金額: " + MoneyFormatter.format(gamePlayer.getMoney())
 						+ profession.getDisplayName() + "の人数: " + game.getPlayersByProfession(profession).size()
 					)
 				);

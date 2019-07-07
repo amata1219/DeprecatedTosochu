@@ -11,12 +11,14 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import amata1219.tosochu.game.GameAPI;
+import amata1219.tosochu.game.GamePlayer;
 
 public abstract class StatesScoreboard {
 
 	//スコアは0～14の間を使用、重複無し
 
 	protected final GameAPI game;
+	protected final GamePlayer gamePlayer;
 	protected final Player player;
 
 	private final ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -27,9 +29,10 @@ public abstract class StatesScoreboard {
 	//スコアの更新を円滑に行う為のボードのテキスト複製マップ
 	protected HashMap<Integer, String> texts = new HashMap<>(15);
 
-	protected StatesScoreboard(GameAPI game, Player player){
+	protected StatesScoreboard(GameAPI game, GamePlayer gamePlayer){
 		this.game = game;
-		this.player = player;
+		this.gamePlayer = gamePlayer;
+		this.player = gamePlayer.getPlayer();
 
 		//スコアボードの表示位置はサイドバーで固定する
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);

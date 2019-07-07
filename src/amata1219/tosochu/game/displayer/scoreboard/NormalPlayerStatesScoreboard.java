@@ -1,8 +1,7 @@
 package amata1219.tosochu.game.displayer.scoreboard;
 
-import org.bukkit.entity.Player;
-
 import amata1219.tosochu.game.GameAPI;
+import amata1219.tosochu.game.GamePlayer;
 import amata1219.tosochu.text.MoneyFormatter;
 
 public class NormalPlayerStatesScoreboard extends StatesScoreboard {
@@ -25,8 +24,8 @@ public class NormalPlayerStatesScoreboard extends StatesScoreboard {
 		<人数>		1
 	 */
 
-	public NormalPlayerStatesScoreboard(GameAPI game, Player player) {
-		super(game, player);
+	public NormalPlayerStatesScoreboard(GameAPI game, GamePlayer gamePlayer) {
+		super(game, gamePlayer);
 
 		//スコアボードにテキストをセットする
 		initialize(
@@ -55,13 +54,13 @@ public class NormalPlayerStatesScoreboard extends StatesScoreboard {
 	@Override
 	public void updateStates() {
 		//賞金の更新
-		updateText(8, MoneyFormatter.format(game.getMoney(player)));
+		updateText(8, MoneyFormatter.format(gamePlayer.getMoney()));
 
 		//賞金単価の更新
-		updateText(7, "(" + MoneyFormatter.format(game.getUnitPriceOfPrizeMoney(game.getDifficulty(player))) + " / 秒)");
+		updateText(7, "(" + MoneyFormatter.format(game.getLoadedMapSettings().getUnitPriceOfPrizeMoney(gamePlayer.getDifficulty())) + " / 秒)");
 
 		//参加人数の更新
-		updateText(1, String.valueOf(game.getPlayers().size()));
+		updateText(1, String.valueOf(game.getOnlinePlayers().size()));
 	}
 
 }

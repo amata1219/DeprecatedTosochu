@@ -2,7 +2,6 @@ package amata1219.tosochu.location;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 public class ImmutableLocation {
 
@@ -23,8 +22,8 @@ public class ImmutableLocation {
 		this.z = z;
 	}
 
-	public void teleport(World world, Player player){
-		player.teleport(new Location(world, x, y, z));
+	public Location toLocation(World world){
+		return new Location(world, x, y, z);
 	}
 
 	@Override

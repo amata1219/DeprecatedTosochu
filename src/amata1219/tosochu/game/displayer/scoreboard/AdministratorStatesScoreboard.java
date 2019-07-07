@@ -1,8 +1,7 @@
 package amata1219.tosochu.game.displayer.scoreboard;
 
-import org.bukkit.entity.Player;
-
 import amata1219.tosochu.game.GameAPI;
+import amata1219.tosochu.game.GamePlayer;
 
 public class AdministratorStatesScoreboard extends StatesScoreboard {
 
@@ -21,8 +20,8 @@ public class AdministratorStatesScoreboard extends StatesScoreboard {
 		通報部隊	4
 	 */
 
-	public AdministratorStatesScoreboard(GameAPI game, Player player) {
-		super(game, player);
+	public AdministratorStatesScoreboard(GameAPI game, GamePlayer gamePlayer) {
+		super(game, gamePlayer);
 
 		initialize(
 			"逃走中",
@@ -46,7 +45,7 @@ public class AdministratorStatesScoreboard extends StatesScoreboard {
 
 	@Override
 	public void updateStates() {
-		updateText(9, "参加人数: " + (game.getPlayers().size() - game.getSpectators().size()));
+		updateText(9, "参加人数: " + (game.getOnlinePlayers().size() - game.getSpectators().size()));
 
 		int numberOfRunaways = game.getRunaways().size();
 		int numberOfDropouts = game.getDropouts().size();

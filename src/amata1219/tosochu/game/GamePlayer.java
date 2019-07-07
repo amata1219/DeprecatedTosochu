@@ -7,19 +7,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import amata1219.tosochu.game.displayer.StatesDisplayer;
+import amata1219.tosochu.location.ImmutableLocation;
 
 public class GamePlayer {
 
+	private final GameAPI game;
 	private final UUID uuid;
-
 	private Difficulty difficulty;
-	private Profession profession;
+	private Profession profession = Profession.NOTHING;
 	private int money;
 	private StatesDisplayer displayer;
 	private boolean administratorMode;
 	private long timeOfDrop, timeOfQuit;
 
-	public GamePlayer(Player player){
+	public GamePlayer(GameAPI game, Player player){
+		this.game = game;
+		difficulty = game.getDifficulty();
 		uuid = player.getUniqueId();
 	}
 
@@ -73,10 +76,9 @@ public class GamePlayer {
 		if(!isOnline())
 			return;
 
-		Player player = getPlayer();
 		boolean actionBarMode = displayer.isActionBarMode();
 
-		displayer = new StatesDisplayer(player);
+		displayer = new StatesDisplayer(this);
 		displayer.setAdiministratorMode(administratorMode);
 		displayer.setActionBarMode(actionBarMode);
 	}
@@ -123,6 +125,11 @@ public class GamePlayer {
 
 	public void removeTimeOfQuit(){
 		timeOfQuit = 0;
+	}
+
+	public void teleport(ImmutableLocation location){
+		if(isOnline())
+			getPlayer().teleport(location.toLocation(game.getWorld()));
 	}
 
 	public void sendMessage(String message){

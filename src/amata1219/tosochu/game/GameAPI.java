@@ -81,25 +81,25 @@ public interface GameAPI {
 
 	List<GamePlayer> getQuittedPlayers();
 
-	List<Player> getPlayersByProfession(Profession profession);
+	List<GamePlayer> getPlayersByProfession(Profession profession);
 
-	default List<Player> getRunaways(){
+	default List<GamePlayer> getRunaways(){
 		return getPlayersByProfession(Profession.RUNAWAY);
 	}
 
-	default List<Player> getDropouts(){
+	default List<GamePlayer> getDropouts(){
 		return getPlayersByProfession(Profession.DROPOUT);
 	}
 
-	default List<Player> getHunters(){
+	default List<GamePlayer> getHunters(){
 		return getPlayersByProfession(Profession.HUNTER);
 	}
 
-	default List<Player> getReporters(){
+	default List<GamePlayer> getReporters(){
 		return getPlayersByProfession(Profession.REPORTER);
 	}
 
-	default List<Player> getSpectators(){
+	default List<GamePlayer> getSpectators(){
 		return getPlayersByProfession(Profession.SPECTATOR);
 	}
 
@@ -118,12 +118,26 @@ public interface GameAPI {
 			return Profession.HUNTER;
 		else if(isReporter(player))
 			return Profession.REPORTER;
-		else
+		else if(isSpectator(player))
 			return Profession.SPECTATOR;
+		else
+			return Profession.NOTHING;
 	}
 
 	default boolean isRunaway(Player player){
 		return getRunaways().contains(player);
+	}
+
+	default void setRunaway(Player player){
+		//牢獄者でないかつ無職でなければ戻る
+		if(!isDropout(player) && !isNothing(player))
+			return;
+
+		//牢獄者のリストから外す
+		getDropouts().remove(player);
+
+		//逃走者のリストに追加する
+		getRunaways().add(player);
 	}
 
 	default boolean isDropout(Player player){
@@ -140,6 +154,10 @@ public interface GameAPI {
 
 	default boolean isSpectator(Player player){
 		return getSpectators().contains(player);
+	}
+
+	default boolean isNothing(Player player){
+		return getProfession(player) == Profession.NOTHING;
 	}
 
 	default boolean isApplicantForHunterLottery(Player player){
