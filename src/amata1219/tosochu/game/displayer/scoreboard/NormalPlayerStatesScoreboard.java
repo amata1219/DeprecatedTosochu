@@ -57,7 +57,7 @@ public class NormalPlayerStatesScoreboard extends StatesScoreboard {
 		updateText(8, MoneyFormatter.format(gamePlayer.getMoney()));
 
 		//賞金単価の更新
-		updateText(7, "(" + MoneyFormatter.format(game.getLoadedMapSettings().getUnitPriceOfPrizeMoney(gamePlayer.getDifficulty())) + " / 秒)");
+		updateText(7, "(" + MoneyFormatter.format(game.getSettings().getUnitPriceOfPrizeMoney(gamePlayer.getDifficulty())) + " / 秒)");
 
 		//参加人数の更新
 		updateText(1, String.valueOf(game.getOnlinePlayers().size()));

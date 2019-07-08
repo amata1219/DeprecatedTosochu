@@ -7,7 +7,7 @@ import amata1219.tosochu.game.GameAPI;
 public class PreparationTimer extends Timer {
 
 	public PreparationTimer(GameAPI game){
-		super(game, game.getLoadedMapSettings().getPreparationTime());
+		super(game, game.getSettings().getPreparationTime());
 	}
 
 	@Override

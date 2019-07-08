@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import amata1219.tosochu.Tosochu;
 import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.timer.PreparationTimer;
@@ -26,13 +27,13 @@ public class TosoGame implements GameAPI {
 	private final Map<Profession, List<GamePlayer>> players = new HashMap<>();
 
 	private int recruitmentNumberOfHunters;
-	private final List<Player> applicantsForHunterLottery = new ArrayList<>();
+	private final List<GamePlayer> applicantsForHunterLottery = new ArrayList<>();
 
 	public TosoGame(MapSettings settings){
 		this.settings = settings;
 
 		for(Profession profession : Profession.values())
-			gamePlayers.put(profession, new ArrayList<>());
+			players.put(profession, new ArrayList<>());
 	}
 
 	@Override
@@ -72,18 +73,18 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public MapSettings getLoadedMapSettings() {
+	public MapSettings getSettings() {
 		return settings;
 	}
 
 	@Override
 	public ImmutableLocation getRandomRespawnLocation() {
-		return settings.getRunawayRespawnLocationSelector().select();
+		return settings.getSelectorOfRunawayRespawnLocation().select();
 	}
 
 	@Override
 	public ImmutableLocation getRandomJailSpawnLocation() {
-		return settings.getJailSpawnLocations().select();
+		return settings.getSelectorOfJailSpawnLocation().select();
 	}
 
 	@Override
@@ -97,18 +98,24 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public List<Player> getApplicantsForHunterLottery() {
+	public List<GamePlayer> getApplicantsForHunterLottery() {
 		return applicantsForHunterLottery;
 	}
 
 	@Override
+	public GamePlayer getGamePlayer(Player player) {
+		return participants.get(player.getUniqueId());
+	}
+
+	@Override
 	public boolean isJoined(Player player) {
-		return false;
+		return participants.containsKey(player.getUniqueId());
 	}
 
 	@Override
 	public boolean isQuitted(Player player) {
-		return false;
+		UUID uuid = player.getUniqueId();
+		return participants.containsKey(uuid) ? participants.get(uuid).isQuitted() : false;
 	}
 
 	@Override
@@ -120,24 +127,34 @@ public class TosoGame implements GameAPI {
 	}
 
 	@Override
-	public void fall(Player runaway) {
-	}
-
-	@Override
-	public void touchedByHunter(Player runaway) {
-	}
-
-	@Override
-	public void tryRespawn(Player dropout) {
-	}
-
-	@Override
 	public void recruitHunters(int recruitmentNumberOfHunters, int waitTime) {
+		if(isRecruitingHunters())
+			return;
+
+		this.recruitmentNumberOfHunters = recruitmentNumberOfHunters;
+
+		new BukkitRunnable(){
+
+			@Override
+			public void run() {
+				int count = recruitmentNumberOfHunters;
+				if(applicantsForHunterLottery.isEmpty()){
+					GamePlayer[] applicants = new GamePlayer[applicantsForHunterLottery.size()];
+
+				}
+
+			}
+
+		}.runTaskLater(Tosochu.getPlugin(), waitTime * 20);
+	}
+
+	private List<Player> drawHunterLottery(){
+
 	}
 
 	@Override
 	public boolean isRecruitingHunters() {
-		return false;
+		return recruitmentNumberOfHunters > 0;
 	}
 
 }

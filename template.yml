@@ -19,7 +19,7 @@ Dfficulty: EASY
 'Correction value for amount of items': "2,1,0.5,1"
 #アイテムの配布個数に乗算する補正値: 各難易度の補正値(E,N,H,HC)
 
-'When restrict participation': 120
+'When restrict participation': "2:00"
 #いつから参加時に強制的に観戦者にするか: 経過秒数
 
 'When apply rejoin penalty': 30

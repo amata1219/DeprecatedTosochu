@@ -7,6 +7,8 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.timer.GameTimer;
@@ -25,11 +27,11 @@ public interface GameAPI {
 	void start();
 
 	default void forcedTermination(){
-		for(Player player : getOnlinePlayers()){
+		for(GamePlayer player : getOnlinePlayers()){
 
 			//スコアボードやスペクテイター状態を外す
 
-			getRandomRespawnLocation().teleport(getWorld(), player);
+			player.teleport(getRandomRespawnLocation());
 		}
 	}
 
@@ -55,14 +57,14 @@ public interface GameAPI {
 		return getTimer() == null ? 0 : getTimer().getElapsedTime();
 	}
 
-	MapSettings getLoadedMapSettings();
+	MapSettings getSettings();
 
 	default World getWorld(){
-		return getLoadedMapSettings().getWorld();
+		return getSettings().getWorld();
 	}
 
 	default Difficulty getDifficulty(){
-		return getLoadedMapSettings().getDifficulty();
+		return getSettings().getDifficulty();
 	}
 
 	ImmutableLocation getRandomRespawnLocation();
@@ -71,15 +73,21 @@ public interface GameAPI {
 
 	List<GamePlayer> getGamePlayers();
 
-	default List<Player> getOnlinePlayers(){
+	GamePlayer getGamePlayer(Player player);
+
+	default List<GamePlayer> getOnlinePlayers(){
 		return getGamePlayers()
 				.stream()
 				.filter(GamePlayer::isOnline)
-				.map(GamePlayer::getPlayer)
 				.collect(Collectors.toList());
 	}
 
-	List<GamePlayer> getQuittedPlayers();
+	default List<GamePlayer> getQuittedPlayers(){
+		return getGamePlayers()
+				.stream()
+				.filter(player -> !player.isOnline())
+				.collect(Collectors.toList());
+	}
 
 	List<GamePlayer> getPlayersByProfession(Profession profession);
 
@@ -103,13 +111,13 @@ public interface GameAPI {
 		return getPlayersByProfession(Profession.SPECTATOR);
 	}
 
-	List<Player> getApplicantsForHunterLottery();
+	List<GamePlayer> getApplicantsForHunterLottery();
 
 	boolean isJoined(Player player);
 
 	boolean isQuitted(Player player);
 
-	default Profession getProfession(Player player){
+	default Profession getProfession(GamePlayer player){
 		if(isRunaway(player))
 			return Profession.RUNAWAY;
 		else if(isDropout(player))
@@ -124,11 +132,11 @@ public interface GameAPI {
 			return Profession.NOTHING;
 	}
 
-	default boolean isRunaway(Player player){
+	default boolean isRunaway(GamePlayer player){
 		return getRunaways().contains(player);
 	}
 
-	default void setRunaway(Player player){
+	default void setRunaway(GamePlayer player){
 		//牢獄者でないかつ無職でなければ戻る
 		if(!isDropout(player) && !isNothing(player))
 			return;
@@ -140,27 +148,27 @@ public interface GameAPI {
 		getRunaways().add(player);
 	}
 
-	default boolean isDropout(Player player){
+	default boolean isDropout(GamePlayer player){
 		return getDropouts().contains(player);
 	}
 
-	default boolean isHunter(Player player){
+	default boolean isHunter(GamePlayer player){
 		return getHunters().contains(player);
 	}
 
-	default boolean isReporter(Player player){
+	default boolean isReporter(GamePlayer player){
 		return getReporters().contains(player);
 	}
 
-	default boolean isSpectator(Player player){
+	default boolean isSpectator(GamePlayer player){
 		return getSpectators().contains(player);
 	}
 
-	default boolean isNothing(Player player){
+	default boolean isNothing(GamePlayer player){
 		return getProfession(player) == Profession.NOTHING;
 	}
 
-	default boolean isApplicantForHunterLottery(Player player){
+	default boolean isApplicantForHunterLottery(GamePlayer player){
 		return getApplicantsForHunterLottery().contains(player);
 	}
 
@@ -168,20 +176,39 @@ public interface GameAPI {
 
 	void quit(Player player);
 
-	void fall(Player runaway);
+	default void fall(Player runaway){
+		runaway.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 140, getSettings().getLevelsOfSlownessEffectAppliedWhenPlayerLands()[Math.min((int) runaway.getFallDistance(), 255)]));
+	}
 
-	void touchedByHunter(Player runaway);
+	default void touchedByHunter(GamePlayer runaway){
+		if(!isRunaway(runaway))
+			return;
 
-	void tryRespawn(Player dropout);
+		getRunaways().remove(runaway);
+		getDropouts().add(runaway);
+
+		runaway.teleport(getSettings().getSelectorOfJailSpawnLocation().select());
+	}
+
+	default void tryRespawn(GamePlayer dropout){
+		if(!isDropout(dropout) || !dropout.isDroped())
+			return;
+
+		if(System.currentTimeMillis() - dropout.getTimeOfDrop() < getSettings().getRespawnCooldownTime(dropout.getDifficulty()))
+			return;
+
+		dropout.removeTimeOfDrop();
+		dropout.teleport(getSettings().getSelectorOfRunawayRespawnLocation().select());
+	}
 
 	void recruitHunters(int recruitmentNumberOfHunters, int waitTime);
 
 	boolean isRecruitingHunters();
 
-	default boolean isFindRunaway(Player hunter){
-		for(Entity entity : hunter.getNearbyEntities(25, 25, 25))
+	default boolean isFindRunaway(GamePlayer hunter){
+		for(Entity entity : hunter.getPlayer().getNearbyEntities(25, 25, 25))
 			if(entity instanceof Player)
-				if(isRunaway((Player) entity))
+				if(isRunaway(getGamePlayer((Player) entity)))
 					return true;
 
 		return false;
@@ -205,11 +232,14 @@ public interface GameAPI {
 	}
 
 	default void broadcastTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut){
-		getOnlinePlayers().forEach(player -> player.sendTitle(title, subTitle, fadeIn, stay, fadeOut));
+		getOnlinePlayers().forEach(player -> player.getPlayer().sendTitle(title, subTitle, fadeIn, stay, fadeOut));
 	}
 
 	default void broadcastSound(Sound sound, float volume, float pitch){
-		getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), sound, volume, pitch));
+		getOnlinePlayers()
+		.stream()
+		.map(GamePlayer::getPlayer)
+		.forEach(player -> player.playSound(player.getLocation(), sound, volume, pitch));
 	}
 
 }

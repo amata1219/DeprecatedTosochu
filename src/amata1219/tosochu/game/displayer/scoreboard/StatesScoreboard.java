@@ -46,7 +46,7 @@ public abstract class StatesScoreboard {
 	//スコアボードの表示するかどうか設定する
 	public void setDisplay(boolean display){
 		//常にスコアボードを表示する設定であれば戻る
-		if(game.getLoadedMapSettings().isAlwaysDisplayScoreboard())
+		if(game.getSettings().isAlwaysDisplayScoreboard())
 			return;
 
 		//現在の状態と指定された状態が違えば状態を更新する

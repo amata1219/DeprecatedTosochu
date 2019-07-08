@@ -1,24 +1,21 @@
 package amata1219.tosochu.game.timer;
 
-import org.bukkit.entity.Player;
-
 import amata1219.tosochu.game.GameAPI;
+import amata1219.tosochu.game.GamePlayer;
 
 public class GameTimer extends Timer {
 
 	public GameTimer(GameAPI game) {
-		super(game, game.getLoadedMapSettings().getTimeLimit());
+		super(game, game.getSettings().getTimeLimit());
 	}
 
 	@Override
 	public void execute(){
-		//賞金を与える
-		for(Player runaway : game.getRunaways())
-			
-			game.depositMoney(runaway, game.getUnitPriceOfPrizeMoney(game.getDifficulty(runaway)));
+		for(GamePlayer player : game.getOnlinePlayers()){
+			if(game.isRunaway(player))
+				player.depositMoney(game.getSettings().getUnitPriceOfPrizeMoney(player.getDifficulty()));
 
-		for(Player player : game.getOnlinePlayers()){
-			game.getStatesDisplayer(player).update(true);
+			player.getDisplayer().update(true);
 		}
 	}
 

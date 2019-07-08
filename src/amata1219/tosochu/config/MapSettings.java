@@ -47,10 +47,12 @@ public class MapSettings extends Config {
 		difficulty = Difficulty.valueOf(getString("Dfficulty").toUpperCase());
 		unitPriceOfPrizeMoney = Difficulty.splitAndToInt(getString("Unit price of prize money"));
 		respawnCooldownTime = Difficulty.splitAndToInt(getString("Respawn cooldown time"));
+		for(int i = 0 ; i < respawnCooldownTime.length; i++)
+			respawnCooldownTime[i] *= 1000;
 		correctionValueForCooldownTimeOfItem = Difficulty.splitAndToDouble(getString("Correction value for cooldown time of item"));
 		correctionValueForAmountOfItems = Difficulty.splitAndToDouble(getString("Correction value for amount of items"));
-		whenRestrictParticipation = getInt("When restrict participation");
-		whenApplyRejoinPenalty = getInt("When apply rejoin penalty");
+		whenRestrictParticipation = TimeFormatter.toSeconds(getString("When restrict participation"));
+		whenApplyRejoinPenalty = getInt("When apply rejoin penalty") * 1000;
 		timeToLiveOfNPC = getInt("Time to live of NPC");
 		firstSpawnLocation = ImmutableLocation.at(getString("First spawn location"));
 		hunterSpawnLocation = ImmutableLocation.at(getString("Hunter spawn location"));
@@ -190,7 +192,7 @@ public class MapSettings extends Config {
 		set("Hunter spawn location", (hunterSpawnLocation = ImmutableLocation.at(x, y, z)).toString());
 	}
 
-	public LocationRandomSelector getRunawayRespawnLocationSelector(){
+	public LocationRandomSelector getSelectorOfRunawayRespawnLocation(){
 		return runawayRespawnLocationSelector;
 	}
 
@@ -204,8 +206,12 @@ public class MapSettings extends Config {
 			set("Runaway respawn locations." + entry.getKey(), entry.getValue().toString());
 	}
 
-	public LocationRandomSelector getJailSpawnLocations(){
+	public LocationRandomSelector getSelectorOfJailSpawnLocation(){
 		return jailSpawnLocationSelector;
+	}
+
+	public Map<Integer, ImmutableLocation> getJailSpawnLocationsMap(){
+		return jailSpawnLocations;
 	}
 
 	public void setJailSpawnLocations(Map<Integer, ImmutableLocation> locations){
