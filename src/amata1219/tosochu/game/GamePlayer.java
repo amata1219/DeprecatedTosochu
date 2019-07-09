@@ -12,7 +12,7 @@ import amata1219.tosochu.location.ImmutableLocation;
 public class GamePlayer {
 
 	private final GameAPI game;
-	private final UUID uuid;
+	public final UUID uuid;
 	private Difficulty difficulty;
 	private Profession profession = Profession.NOTHING;
 	private int money;

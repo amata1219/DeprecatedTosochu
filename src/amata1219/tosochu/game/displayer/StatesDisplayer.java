@@ -67,7 +67,7 @@ public class StatesDisplayer {
 	public void update(boolean byTimer){
 		if(byTimer){
 			if(actionBarMode){
-				Profession profession = game.getProfession(player);
+				Profession profession = game.getProfession(gamePlayer);
 				player.spigot().sendMessage(
 					ChatMessageType.ACTION_BAR,
 					new TextComponent(

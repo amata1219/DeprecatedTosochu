@@ -48,7 +48,7 @@ public class NormalPlayerStatesScoreboard extends StatesScoreboard {
 
 	@Override
 	public void updateProfession() {
-		updateText(11, game.getProfession(player).getDisplayName());
+		updateText(11, game.getProfession(gamePlayer).getDisplayName());
 	}
 
 	@Override

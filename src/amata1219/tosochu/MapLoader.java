@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.GameAPI;
 import amata1219.tosochu.game.TosoGame;
-import amata1219.tosochu.location.ImmutableLocation;
 import amata1219.tosochu.storage.MapSettingsStorage;
 
 public class MapLoader {
@@ -86,12 +85,9 @@ public class MapLoader {
 		//移動先のマップをロードする
 		load(to);
 
-		//スポーン地点を取得
-		ImmutableLocation spawnLocation = settings.getFirstSpawnLocation();
-
 		//移動前のワールドにいるプレイヤーを移動先のワールドにテレポートさせる
 		for(Player player : from.getPlayers())
-			spawnLocation.teleport(world, player);
+			game.join(player);
 
 		//移動前のワールドをアンロードする
 		unload(from);

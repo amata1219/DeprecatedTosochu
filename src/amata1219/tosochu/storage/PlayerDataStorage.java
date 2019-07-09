@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import amata1219.tosochu.config.Config;
+import amata1219.tosochu.game.GamePlayer;
 import amata1219.tosochu.playerdata.Permission;
 import amata1219.tosochu.playerdata.PlayerData;
 
@@ -54,16 +55,16 @@ public class PlayerDataStorage implements Listener {
 		}
 	}
 
-	public PlayerData get(Player player){
-		return get(player.getUniqueId());
+	public PlayerData get(GamePlayer player){
+		return get(player.uuid);
 	}
 
 	public PlayerData get(UUID uuid){
 		return dataMap.get(uuid);
 	}
 
-	public boolean isExist(Player player){
-		return isExist(player.getUniqueId());
+	public boolean isExist(GamePlayer player){
+		return isExist(player.uuid);
 	}
 
 	public boolean isExist(UUID uuid){
