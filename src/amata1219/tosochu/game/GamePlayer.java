@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import amata1219.tosochu.game.displayer.StatesDisplayer;
 import amata1219.tosochu.location.ImmutableLocation;
+import amata1219.tosochu.playerdata.PlayerData;
+import amata1219.tosochu.storage.PlayerDataStorage;
 
 public class GamePlayer {
 
@@ -28,6 +30,10 @@ public class GamePlayer {
 
 	public Player getPlayer(){
 		return Bukkit.getPlayer(uuid);
+	}
+
+	public PlayerData getData(){
+		return PlayerDataStorage.getStorage().get(uuid);
 	}
 
 	public boolean isOnline(){

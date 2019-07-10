@@ -1,7 +1,6 @@
 package amata1219.tosochu.game;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import amata1219.tosochu.config.MapSettings;
 import amata1219.tosochu.game.timer.PreparationTimer;
 import amata1219.tosochu.game.timer.Timer;
 import amata1219.tosochu.location.ImmutableLocation;
-import amata1219.tosochu.storage.PlayerDataStorage;
 
 public class TosoGame implements GameAPI {
 
@@ -140,19 +138,28 @@ public class TosoGame implements GameAPI {
 			@Override
 			public void run() {
 				int count = recruitmentNumberOfHunters;
-				if(!applicantsForHunterLottery.isEmpty()){
-					PlayerDataStorage storage = PlayerDataStorage.getStorage();
-					Collections.sort(applicantsForHunterLottery, (p1, p2) -> storage.get(p1.getPlayer()).getNumberOfTimesThatBecameHunter() - storage.get(p2.getPlayer()).getNumberOfTimesThatBecameHunter());
-					int[] cumulativeSummary = new int[applicantsForHunterLottery.size()];
+				while(applicantsForHunterLottery.isEmpty()){
+					if(count <= 0)
+						return;
+
+					GamePlayer hunter = HunterLottery.drawLottery(applicantsForHunterLottery);
+					setHunter(hunter);
+					applicantsForHunterLottery.remove(hunter);
+					count--;
 				}
 
+				List<GamePlayer> players = new ArrayList<>();
+				players.addAll(getNothings());
+				players.addAll(getRunaways());
+				while(count > 0){
+					GamePlayer hunter = HunterLottery.drawLottery(players);
+					setHunter(hunter);
+					players.remove(hunter);
+					count--;
+				}
 			}
 
 		}.runTaskLater(Tosochu.getPlugin(), waitTime * 20);
-	}
-
-	private List<Player> drawHunterLottery(){
-
 	}
 
 	@Override

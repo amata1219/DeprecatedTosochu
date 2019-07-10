@@ -59,12 +59,20 @@ public class PlayerDataStorage implements Listener {
 		return get(player.uuid);
 	}
 
+	public PlayerData get(Player player){
+		return get(player.getUniqueId());
+	}
+
 	public PlayerData get(UUID uuid){
 		return dataMap.get(uuid);
 	}
 
 	public boolean isExist(GamePlayer player){
 		return isExist(player.uuid);
+	}
+
+	public boolean isExist(Player player){
+		return isExist(player.getUniqueId());
 	}
 
 	public boolean isExist(UUID uuid){

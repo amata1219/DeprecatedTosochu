@@ -111,6 +111,10 @@ public interface GameAPI {
 		return getPlayersByProfession(Profession.SPECTATOR);
 	}
 
+	default List<GamePlayer> getNothings(){
+		return getPlayersByProfession(Profession.NOTHING);
+	}
+
 	List<GamePlayer> getApplicantsForHunterLottery();
 
 	boolean isJoined(Player player);
@@ -152,8 +156,16 @@ public interface GameAPI {
 		return getDropouts().contains(player);
 	}
 
+	default void setDropout(GamePlayer player){
+
+	}
+
 	default boolean isHunter(GamePlayer player){
 		return getHunters().contains(player);
+	}
+
+	default void setHunter(GamePlayer player){
+
 	}
 
 	default boolean isReporter(GamePlayer player){

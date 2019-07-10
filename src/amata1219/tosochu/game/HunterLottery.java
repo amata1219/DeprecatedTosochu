@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.Random;
 
 import amata1219.tosochu.playerdata.PlayerData;
-import amata1219.tosochu.storage.PlayerDataStorage;
 
 public class HunterLottery {
 
-	public GamePlayer drawLottery(List<GamePlayer> players){
+	public static GamePlayer drawLottery(List<GamePlayer> players){
+		if(players.isEmpty())
+			return null;
+
 		int size = players.size();
 
 		List<PlayerData> dataList = new ArrayList<>(size);
 		for(GamePlayer player : players)
-			dataList.add(PlayerDataStorage.getStorage().get(player));
+			dataList.add(player.getData());
 
 		int totalProbability = 0;
 		for(PlayerData data : dataList){
@@ -39,7 +41,7 @@ public class HunterLottery {
 		return null;
 	}
 
-	private class Pair {
+	private static class Pair {
 
 		public final GamePlayer player;
 		public final int probability;
