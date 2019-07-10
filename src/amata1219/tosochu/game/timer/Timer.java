@@ -1,9 +1,9 @@
 package amata1219.tosochu.game.timer;
 
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import amata1219.tosochu.game.GameAPI;
+import amata1219.tosochu.game.GamePlayer;
 
 public abstract class Timer extends BukkitRunnable {
 
@@ -19,8 +19,8 @@ public abstract class Timer extends BukkitRunnable {
 	@Override
 	public final void run(){
 		if(remainingTime > 0){
-			for(Player player : game.getOnlinePlayers())
-				player.setLevel(remainingTime);
+			for(GamePlayer player : game.getOnlinePlayers())
+				player.getPlayer().setLevel(remainingTime);
 
 			//残り時間が10の倍数又は5秒以下であれば全体に告知する
 			if(remainingTime % 10 == 0 || remainingTime <= 5)

@@ -40,7 +40,7 @@ public class TosoGame implements GameAPI {
 	public void start() {
 		//startコマンドですべきか？
 
-		if(!isBeforeStart())
+		if(!isBeforeStart() || getHunters().isEmpty())
 			return;
 
 		setTimer(new PreparationTimer(this));
@@ -120,10 +120,23 @@ public class TosoGame implements GameAPI {
 
 	@Override
 	public void join(Player player) {
+		UUID uuid = player.getUniqueId();
+		GamePlayer gamePlayer = participants.containsKey(uuid) ? participants.get(uuid) : participants.put(new GamePlayer(this, player));
+		participants.put(gamePlayer.uuid, gamePlayer);
+		getNothings().add(gamePlayer);
 	}
 
 	@Override
 	public void quit(Player player) {
+		UUID uuid = player.getUniqueId();
+		if(!participants.containsKey(uuid))
+			return;
+
+		GamePlayer gamePlayer = participants.get(uuid);
+		applicantsForHunterLottery.remove(gamePlayer);
+		getPlayersByProfession(gamePlayer.getProfession()).remove(gamePlayer);
+
+		gamePlayer.recordTimeOfQuit();
 	}
 
 	@Override

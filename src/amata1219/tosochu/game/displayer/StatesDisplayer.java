@@ -37,6 +37,10 @@ public class StatesDisplayer {
 		board.setDisplay(true);
 	}
 
+	public StatesScoreboard getStatesScoreoard(){
+		return board;
+	}
+
 	public boolean isAdministratorMode(){
 		return board instanceof AdministratorStatesScoreboard;
 	}

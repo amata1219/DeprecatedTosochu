@@ -141,15 +141,17 @@ public interface GameAPI {
 	}
 
 	default void setRunaway(GamePlayer player){
-		//牢獄者でないかつ無職でなければ戻る
-		if(!isDropout(player) && !isNothing(player))
+		if(!isNothing(player))
 			return;
 
-		//牢獄者のリストから外す
-		getDropouts().remove(player);
+		player.setProfession(Profession.RUNAWAY);
 
-		//逃走者のリストに追加する
+		getDropouts().remove(player);
 		getRunaways().add(player);
+
+		player.sendMessage("逃走者になりました。");
+
+		player.teleport(getSettings().getFirstSpawnLocation());
 	}
 
 	default boolean isDropout(GamePlayer player){
@@ -157,7 +159,17 @@ public interface GameAPI {
 	}
 
 	default void setDropout(GamePlayer player){
+		if(!isRunaway(player))
+			return;
 
+		player.setProfession(Profession.DROPOUT);
+
+		getRunaways().remove(player);
+		getDropouts().add(player);
+
+		player.sendMessage("確保されました。");
+
+		player.teleport(getRandomRespawnLocation());
 	}
 
 	default boolean isHunter(GamePlayer player){
@@ -165,11 +177,38 @@ public interface GameAPI {
 	}
 
 	default void setHunter(GamePlayer player){
+		if(!isRunaway(player) && !isNothing(player))
+			return;
 
+		player.setProfession(Profession.HUNTER);
+
+		getRunaways().remove(player);
+		getHunters().add(player);
+
+		player.sendMessage("ハンターになりました。");
+
+		Player bukkitPlayer = player.getPlayer();
+
+		bukkitPlayer.setFoodLevel(4);
+		bukkitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 2));
+
+		player.teleport(getSettings().getHunterSpawnLocation());
 	}
 
 	default boolean isReporter(GamePlayer player){
 		return getReporters().contains(player);
+	}
+
+	default void setReporter(GamePlayer player){
+		if(!isRunaway(player) && !isNothing(player))
+			return;
+
+		player.setProfession(Profession.REPORTER);
+
+		getRunaways().remove(player);
+
+		player.sendMessage("通報部隊になりました。");
+
 	}
 
 	default boolean isSpectator(GamePlayer player){
@@ -232,6 +271,11 @@ public interface GameAPI {
 
 	default void setLockOnRunaway(Player hunter, boolean lockOn){
 		hunter.setFoodLevel(lockOn ? 20 : 4);
+	}
+
+	default void updateStatesScoreboards(){
+		for(GamePlayer player : getOnlinePlayers())
+			player.getDisplayer().update(false);
 	}
 
 	default void broadcastMessage(String message){

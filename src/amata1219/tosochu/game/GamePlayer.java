@@ -56,6 +56,7 @@ public class GamePlayer {
 	public void setProfession(Profession profession){
 		Validate.notNull(profession, "Profession can not be null");
 		this.profession = profession;
+		displayer.getStatesScoreoard().updateProfession();
 	}
 
 	public int getMoney(){
@@ -78,7 +79,7 @@ public class GamePlayer {
 		return displayer;
 	}
 
-	public void updateDisplayer(){
+	public void newDisplayer(){
 		if(!isOnline())
 			return;
 
